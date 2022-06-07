@@ -80,7 +80,7 @@ async def on_message(message):
         if len(message.attachments) > 0:
             content += ' ' + message.attachments[0].url
 
-    print('[Discord] [{}] {}'.format(message.channel, content))
+    print('[Discord] [#{}] {}'.format(message.channel, content))
 
     # if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
     #     irc.privmsg(channels[message.channel.id], "%s" % (content))
