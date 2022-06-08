@@ -2,7 +2,7 @@
 
 import irc.bot
 import re
-
+import asyncio
 
 class IRC(irc.bot.SingleServerIRCBot):
     thread_lock = None
@@ -54,7 +54,12 @@ class IRC(irc.bot.SingleServerIRCBot):
                 print("[IRC] [{}] {}".format(event.target, message))
                 if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
                     print('[IRC] [{}] CMD DETECTED: {}'.format(event.target, message))
-                    self.game.irc_command(self.privmsg, event.target, message)
+
+                    loop = asyncio.new_event_loop()
+                    try:
+                        loop.run_until_complete(self.game.command(self.privmsg, event.target, message))
+                    finally:
+                        loop.close()
 
     def run(self):
         self.start()

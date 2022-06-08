@@ -84,4 +84,4 @@ async def on_message(message):
         if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
             print('[Discord] [#{}] CMD DETECTED: {}'.format(message.channel, content))
             channel = client.get_channel(message.channel.id)
-            await game.discord_command(channel.send, content)
+            await game.command(channel.send, None, content)

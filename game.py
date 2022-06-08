@@ -10,10 +10,12 @@ class Game:
         while True:
             time.sleep(1)
 
-    def irc_command(self, command, target, message):
+    async def command(self, command, target, message):
         if message[1:] == 'foo':
-            command(target, "bar")
+            await self.process_response(command, target, "bar")
 
-    async def discord_command(self, command, message):
-        if message[1:] == 'foo':
-            await command("bar")
+    async def process_response(self, command, target, response):
+        if target != None:
+            command(target, response)
+        else:
+            await command(response)
