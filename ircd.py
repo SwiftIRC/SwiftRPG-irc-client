@@ -12,7 +12,9 @@ class IRC(irc.bot.SingleServerIRCBot):
     connection = None
     discord = None
 
-    def __init__(self, config):
+    game = None
+
+    def __init__(self, config, game):
         irc.client.ServerConnection.buffer_class.encoding = "latin-1"
         irc.bot.SingleServerIRCBot.__init__(self, [
             (config["SERVER"],
@@ -21,6 +23,7 @@ class IRC(irc.bot.SingleServerIRCBot):
             "SwiftRPG")
 
         self.config = config
+        self.game = game
 
     def set_discord(self, discordd):
         self.discord = discordd
@@ -49,19 +52,9 @@ class IRC(irc.bot.SingleServerIRCBot):
             with self.thread_lock:
                 message = event.arguments[0].strip()
                 print("[IRC] [{}] {}".format(event.target, message))
-                # message = "**<{:s}>** {:s}".format(
-                #     re.sub(r"(]|-|\\|[`*_{}[()#+.!])", r'\\\1', event.source.nick), message)
-                # self.discord.privmsg(
-                #     self.config['CHANNELS'][event.target], message)
-
-    # def on_action(self, connection, event):
-    #     if (event.target in self.config['CHANNELS']):
-    #         with self.thread_lock:
-    #             message = event.arguments[0].strip()
-    #             message = "* {:s} {:s}".format(
-    #                 re.sub(r"(]|-|\\|[`*_{}[()#+.!])", r'\\\1', event.source.nick), message)
-    #             self.discord.privmsg(
-    #                 self.config['CHANNELS'][event.target], message)
+                if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
+                    print('[IRC] [{}] CMD DETECTED: {}'.format(event.target, message))
+                    self.game.irc_command(self.privmsg, event.target, message)
 
     def run(self):
         self.start()

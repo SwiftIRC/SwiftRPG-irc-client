@@ -15,23 +15,21 @@ config = None
 client = discord.Client()
 server = None
 channels = {}
-irc = None
+game = None
 
 
 class Discord:
-    def __init__(self, conf):
+    def __init__(self, conf, g):
         global config
         global thread_lock
         global channels
+        global game
 
         channels = {conf['CHANNELS'][channel]
             : channel for channel in conf['CHANNELS']}
 
         config = conf
-
-    def set_irc(self, ircd):
-        global irc
-        irc = ircd
+        game = g
 
     def set_thread_lock(self, lock):
         global thread_lock
@@ -69,7 +67,7 @@ async def on_message(message):
     global client
     global channels
     global thread_lock
-    global irc
+    global game
 
     # Don't reply to itself
     if message.author == client.user:
@@ -80,10 +78,10 @@ async def on_message(message):
         if len(message.attachments) > 0:
             content += ' ' + message.attachments[0].url
 
-    print('[Discord] [#{}] {}'.format(message.channel, content))
+    if message.channel.id in channels:
+        print('[Discord] [#{}] {}'.format(message.channel, content))
 
-    # if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
-    #     irc.privmsg(channels[message.channel.id], "%s" % (content))
-    # else:
-    #     irc.privmsg(channels[message.channel.id], "<%s> %s" %
-    #                 (message.author.display_name, content))
+        if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
+            print('[Discord] [#{}] CMD DETECTED: {}'.format(message.channel, content))
+            channel = client.get_channel(message.channel.id)
+            await game.discord_command(channel.send, content)
