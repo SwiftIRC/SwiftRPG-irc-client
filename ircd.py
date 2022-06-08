@@ -51,13 +51,13 @@ class IRC(irc.bot.SingleServerIRCBot):
         if (event.target in self.config['CHANNELS']):
             with self.thread_lock:
                 message = event.arguments[0].strip()
-                print("[IRC] [{}] {}".format(event.target, message))
+                print("[IRC] [{}] ({}) {}".format(event.target, event.source.nick, message))
                 if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
-                    print('[IRC] [{}] CMD DETECTED: {}'.format(event.target, message))
+                    print('[IRC] [{}] CMD DETECTED: ({}) {}'.format(event.target, event.source.nick, message))
 
                     loop = asyncio.new_event_loop()
                     try:
-                        loop.run_until_complete(self.game.command(self.privmsg, event.target, message))
+                        loop.run_until_complete(self.game.command(self.privmsg, event.target, event.source.nick, message))
                     finally:
                         loop.close()
 

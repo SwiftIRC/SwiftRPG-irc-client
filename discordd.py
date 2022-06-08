@@ -79,9 +79,9 @@ async def on_message(message):
             content += ' ' + message.attachments[0].url
 
     if message.channel.id in channels:
-        print('[Discord] [#{}] {}'.format(message.channel, content))
+        print('[Discord] [#{}] ({}) {}'.format(message.channel, message.author, content))
 
         if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
-            print('[Discord] [#{}] CMD DETECTED: {}'.format(message.channel, content))
+            print('[Discord] [#{}] CMD DETECTED: ({}) {}'.format(message.channel, message.author, content))
             channel = client.get_channel(message.channel.id)
-            await game.command(channel.send, None, content)
+            await game.command(channel.send, None, message.author, content)
