@@ -46,8 +46,7 @@ class IRC(irc.bot.SingleServerIRCBot):
     def on_welcome(self, connection, event):
         self.connection = connection
 
-        connection.join(
-            ','.join([channel for channel in self.config['CHANNELS']]))
+        connection.join(','.join([channel for channel in self.config['CHANNELS']]))
 
     def on_pubmsg(self, connection, event):
         if (event.target in self.config['CHANNELS']):
@@ -75,7 +74,7 @@ class IRC(irc.bot.SingleServerIRCBot):
             if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
                 print('[IRC] [{}] PM CMD DETECTED: ({}) {}'.format(event.target, event.source.nick, message))
 
-                if split[0][1:] == "login":
+                if split[0][1:] == "login" or split[0][1:] == "register":
                     if len(split) != 3:
                         self.privmsg(event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
                         return
