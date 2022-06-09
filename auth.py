@@ -2,7 +2,8 @@
 
 class Auth:
     auth = {"Dragon": {"character": "Dragon"},
-            "Dragon#1088": {"character": "Dragon"}
+            "Dragon#1088": {"character": "Dragon"},
+            "foo": {"character": "foo"},
             }
 
     def __init__(self):
@@ -16,3 +17,10 @@ class Auth:
 
     def check(self, nick):
         return (True if '{}'.format(nick) in self.auth else False)
+
+    def logout(self, nick):
+        del self.auth[nick]
+
+    def rename(self, nick, newnick):
+        self.auth[newnick] = self.auth[nick]
+        del self.auth[nick]

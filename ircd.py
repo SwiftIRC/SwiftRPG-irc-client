@@ -92,6 +92,21 @@ class IRC(irc.bot.SingleServerIRCBot):
                     else:
                         self.privmsg(event.source.nick, "Not currently logged in.")
 
+    def on_nick(self, nick, event):
+        old_name = event.source.nick
+        new_name = event.target
+
+        if self.auth.check(old_name):
+            self.auth.rename(old_name, new_name)
+
+    def on_quit(self, quit, event):
+        if self.auth.check(event.source.nick):
+            self.auth.logout(event.source.nick)
+
+    def on_kick(self, kick, event):
+        print(event.arguments[0])
+        if event.target in self.config['CHANNELS'] and self.auth.check(event.arguments[0]):
+            self.auth.logout(event.arguments[0])
 
     def run(self):
         self.start()
