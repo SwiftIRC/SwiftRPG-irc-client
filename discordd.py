@@ -95,7 +95,11 @@ async def on_message(message):
                 else:
                     await message.channel.send("Login failed!")
             elif content[1:] == "logout":
-                await message.channel.send("Logout failed!")
+                    if self.auth.check(message.author):
+                        self.auth.logout(message.author)
+                        await message.channel.send("Logout successful!")
+                    else:
+                        await message.channel.send("You are not logged in.")
             elif content[1:] == "loggedin":
                 if auth.check(message.author):
                     await message.channel.send("Successfully logged in!")

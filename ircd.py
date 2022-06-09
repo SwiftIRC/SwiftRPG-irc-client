@@ -83,9 +83,14 @@ class IRC(irc.bot.SingleServerIRCBot):
                     elif self.auth.login(event.source.nick, split[1], split[2]):
                         self.privmsg(event.source.nick, "Login successful!")
                     else:
+                        # actual auth pls
                         self.privmsg(event.source.nick, "Login failed!")
                 elif split[0][1:] == "logout":
-                    self.privmsg(event.source.nick, "Logout failed!")
+                    if self.auth.check(event.source.nick):
+                        self.auth.logout(event.source.nick)
+                        self.privmsg(event.source.nick, "Logout successful!")
+                    else:
+                        self.privmsg(event.source.nick, "You are not logged in.")
                 elif split[0][1:] == "loggedin":
                     if self.auth.check(event.source.nick):
                         self.privmsg(event.source.nick, "Successfully logged in!")
