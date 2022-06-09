@@ -7,6 +7,7 @@ import signal
 import sys
 import threading
 
+from auth import *
 from ircd import *
 from discordd import *
 from game import *
@@ -28,18 +29,18 @@ config = {
     'CHANNELS': json.loads(os.getenv('CHANNELS'))
 }
 
-def discord(argv, game):
+def discord(argv, game, auth):
     print("Connecting to Discord... ({})".format(argv))
 
-    discord_process = Discord(config, game)
+    discord_process = Discord(config, game, auth)
     discord_process.set_thread_lock(discord_thread_lock)
     
     discord_process.run()
 
-def irc(argv, game):
+def irc(argv, game, auth):
     print("Connecting to IRC... ({})".format(argv))
 
-    irc_process = IRC(config, game)
+    irc_process = IRC(config, game, auth)
     irc_process.set_thread_lock(irc_thread_lock)
 
     thread = threading.Thread(target=irc_process.run)
@@ -74,11 +75,12 @@ def game_thread():
 
 
 def main(argv):
+    auth = Auth()
     gaming_thread, game = game_thread()
 
-    irc_thread, irc_process = irc(argv, game)
+    irc_thread, irc_process = irc(argv, game, auth)
     
-    discord(argv, game) # This keeps the main thread alive
+    discord(argv, game, auth) # This keeps the main thread alive
     irc_process.close() # If we reach here, then close the IRC connection
 
 

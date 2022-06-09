@@ -16,20 +16,23 @@ client = discord.Client()
 server = None
 channels = {}
 game = None
+auth = None
 
 
 class Discord:
-    def __init__(self, conf, g):
+    def __init__(self, conf, g, a):
         global config
         global thread_lock
         global channels
         global game
+        global auth
 
         channels = {conf['CHANNELS'][channel]
             : channel for channel in conf['CHANNELS']}
 
         config = conf
         game = g
+        auth = a
 
     def set_thread_lock(self, lock):
         global thread_lock
@@ -68,6 +71,7 @@ async def on_message(message):
     global channels
     global thread_lock
     global game
+    global auth
 
     # Don't reply to itself
     if message.author == client.user:
@@ -78,10 +82,29 @@ async def on_message(message):
         if len(message.attachments) > 0:
             content += ' ' + message.attachments[0].url
 
-    if message.channel.id in channels:
-        print('[Discord] [#{}] ({}) {}'.format(message.channel, message.author, content))
-
-        if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
+    if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
+        if "{}".format(message.channel) == "Direct Message with {}".format(message.author):
+            print('[Discord] [{}] PM CMD DETECTED: ({}) {}'.format(message.channel, message.author, content))
+            split = content.split()
+            if split[0][1:] == "login":
+                if len(split) != 3:
+                    await message.channel.send("Syntax: {} <username> <password>".format(split[0]))
+                    return
+                if auth.login(message.author, split[1], split[2]):
+                    await message.channel.send("Login successful!")
+                else:
+                    await message.channel.send("Login failed!")
+            elif content[1:] == "logout":
+                await message.channel.send("Logout failed!")
+            elif content[1:] == "loggedin":
+                if auth.check(message.author):
+                    await message.channel.send("Successfully logged in!")
+                else:
+                    await message.channel.send("Not currently logged in.")
+        elif message.channel.id in channels:
+            if not auth.check(message.author):
+                await message.author.send("You are not logged in.")
+                return
             print('[Discord] [#{}] CMD DETECTED: ({}) {}'.format(message.channel, message.author, content))
-            channel = client.get_channel(message.channel.id)
-            await game.command(channel.send, None, message.author, content)
+            # channel = client.get_channel(message.channel.id)
+            await game.command(message.channel.send, None, message.author, content)
