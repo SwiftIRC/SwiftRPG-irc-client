@@ -3,6 +3,7 @@
 import requests
 import os
 
+
 class Auth:
     auth = {}
     ssl_verify = True
@@ -15,12 +16,16 @@ class Auth:
         if '{}'.format(nick) in self.auth and self.auth[nick]['character'].lower() == username.lower():
             return True
 
-        headers = {'Authorization': 'Bearer {}'.format(os.getenv('API_TOKEN'))}
+        headers = {'X-Bot-Token': os.getenv('API_TOKEN')}
 
-        response = requests.post("https://rpg.swiftirc.net/api/auth", data={'name': username, 'password': password}, verify=self.ssl_verify, headers=headers)
+        response = requests.post("{}/api/auth".format(os.getenv('HOSTNAME')),
+                                 data={'name': username, 'password': password},
+                                 verify=self.ssl_verify,
+                                 headers=headers)
 
         if response.status_code == 200:
-            self.auth[nick] = {'character': username}
+            self.auth[nick] = {'character': username,
+                               'token': response.json().get('token', '')}
             return True
         return False
 
@@ -33,3 +38,9 @@ class Auth:
     def rename(self, nick, newnick):
         self.auth[newnick] = self.auth[nick]
         del self.auth[nick]
+
+    def get_character(self, nick):
+        return self.auth.get(nick, {}).get('character', None)
+
+    def get_token(self, nick):
+        return self.auth.get(nick, {}).get('token', None)

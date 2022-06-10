@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 
 import math
+import os
+import requests
 import time
 
+
 class Game:
+    ssl_verify = True
+
     def __init__(self):
-        pass
+        if os.getenv('SSL_VERIFY'):
+            self.ssl_verify = bool(int(os.getenv('SSL_VERIFY')))
 
     def start(self):
         while True:
@@ -28,6 +34,8 @@ class Game:
             await command(response)
 
     async def command(self, command, target, author, message):
+        character = self.auth.get_character(author)
+        token = self.auth.get_token(author)
         split = message.split()
         if message[1:] == 'foo':
             await self.process_response(command, target, "What's up, {}?".format(author))
@@ -47,7 +55,9 @@ class Game:
             await self.process_response(command, target, "XP of {} is equivalent to level {}".format(split[1], level))
         # Thieving
         elif message[1:] == 'pickpocket':
-            pass
+            response = self.http_post(
+                command, target, token, 'thieving/pickpocket')
+            print(response)
         elif message[1:] == 'steal':
             pass
         elif message[1:] == 'pilfer':
@@ -76,3 +86,20 @@ class Game:
         # Cooking
         elif message[1:] == "cook":
             pass
+
+    async def http_post(self, command, target, token, endpoint, data={}):
+        headers = {'Authorization': 'Bearer {}'.format(token),
+                   'X-Bot-Token': os.getenv('API_TOKEN')}
+
+        response = requests.post("{}/api/{}".format(os.getenv('HOSTNAME'), endpoint),
+                                 data=data,
+                                 verify=self.ssl_verify,
+                                 headers=headers)
+
+        if response.status_code == 419:
+            await self.process_response(command, target, "Error: user session expired")
+        elif response.status_code == 200:
+            return response.json()
+        else:
+            print("ERROR: game.py [104]: ",
+                  response.status_code, response.text)
