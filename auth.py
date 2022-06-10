@@ -39,8 +39,8 @@ class Auth:
         self.auth[newnick] = self.auth[nick]
         del self.auth[nick]
 
-    def get_character(self, nick):
+    async def get_character(self, nick):
         return self.auth.get(nick, {}).get('character', None)
 
-    def get_token(self, nick):
+    async def get_token(self, nick):
         return self.auth.get(nick, {}).get('token', None)

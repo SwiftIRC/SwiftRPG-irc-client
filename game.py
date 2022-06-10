@@ -33,9 +33,9 @@ class Game:
         else:
             await command(response)
 
-    async def command(self, command, target, author, message):
-        character = self.auth.get_character(author)
-        token = self.auth.get_token(author)
+    async def command(self, auth, command, target, author, message):
+        character = await auth.get_character(author)
+        token = await auth.get_token(author)
         split = message.split()
         if message[1:] == 'foo':
             await self.process_response(command, target, "What's up, {}?".format(author))
@@ -55,14 +55,25 @@ class Game:
             await self.process_response(command, target, "XP of {} is equivalent to level {}".format(split[1], level))
         # Thieving
         elif message[1:] == 'pickpocket':
-            response = self.http_post(
+            response = await self.http_post(
                 command, target, token, 'thieving/pickpocket')
-            print(response)
+            if response:
+                await self.process_response(command, target, "Thieving: {} - Gold: {}".format(response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'steal':
-            pass
+            response = await self.http_post(
+                command, target, token, 'thieving/steal')
+            if response:
+                await self.process_response(command, target, "Thieving: {} - Gold: {}".format(response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'pilfer':
-            pass
+            response = await self.http_post(
+                command, target, token, 'thieving/pilfer')
+            if response:
+                await self.process_response(command, target, "Thieving: {} - Gold: {}".format(response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'plunder':
+            response = await self.http_post(
+                command, target, token, 'thieving/plunder')
+            if response:
+                await self.process_response(command, target, "Thieving: {} - Gold: {}".format(response.get('thieving', 0), response.get('gold', 0)))
             pass
         # Fishing
         elif message[1:] == "net":
@@ -98,6 +109,9 @@ class Game:
 
         if response.status_code == 419:
             await self.process_response(command, target, "Error: user session expired")
+        elif response.status_code == 403:
+            print(response.text)
+            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
         elif response.status_code == 200:
             return response.json()
         else:

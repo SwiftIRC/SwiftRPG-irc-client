@@ -4,6 +4,7 @@ import irc.bot
 import re
 import asyncio
 
+
 class IRC(irc.bot.SingleServerIRCBot):
     thread_lock = None
     running = True
@@ -46,21 +47,26 @@ class IRC(irc.bot.SingleServerIRCBot):
     def on_welcome(self, connection, event):
         self.connection = connection
 
-        connection.join(','.join([channel for channel in self.config['CHANNELS']]))
+        connection.join(
+            ','.join([channel for channel in self.config['CHANNELS']]))
 
     def on_pubmsg(self, connection, event):
         if (event.target in self.config['CHANNELS']):
             with self.thread_lock:
                 message = event.arguments[0].strip()
-                print("[IRC] [{}] ({}) {}".format(event.target, event.source.nick, message))
+                print("[IRC] [{}] ({}) {}".format(
+                    event.target, event.source.nick, message))
                 if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
                     if not self.auth.check(event.source.nick):
-                        self.privmsg(event.source.nick, "You are not logged in.")
+                        self.privmsg(event.source.nick,
+                                     "You are not logged in.")
                         return
-                    print('[IRC] [{}] CMD DETECTED: ({}) {}'.format(event.target, event.source.nick, message))
+                    print('[IRC] [{}] CMD DETECTED: ({}) {}'.format(
+                        event.target, event.source.nick, message))
                     loop = asyncio.new_event_loop()
                     try:
-                        loop.run_until_complete(self.game.command(self.privmsg, event.target, event.source.nick, message))
+                        loop.run_until_complete(self.game.command(
+                            self.auth, self.privmsg, event.target, event.source.nick, message))
                     finally:
                         loop.close()
 
@@ -69,17 +75,21 @@ class IRC(irc.bot.SingleServerIRCBot):
             message = event.arguments[0].strip()
             split = message.split()
 
-            print("[IRC] [{}] ({}) {}".format(event.target, event.source.nick, message))
+            print("[IRC] [{}] ({}) {}".format(
+                event.target, event.source.nick, message))
 
             if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
-                print('[IRC] [{}] PM CMD DETECTED: ({}) {}'.format(event.target, event.source.nick, message))
+                print('[IRC] [{}] PM CMD DETECTED: ({}) {}'.format(
+                    event.target, event.source.nick, message))
 
                 if split[0][1:] == "login" or split[0][1:] == "register":
                     if len(split) != 3:
-                        self.privmsg(event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
+                        self.privmsg(
+                            event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
                         return
                     if self.auth.check(event.source.nick):
-                        self.privmsg(event.source.nick, "You are already logged in.")
+                        self.privmsg(event.source.nick,
+                                     "You are already logged in.")
                     elif self.auth.login(event.source.nick, split[1], split[2]):
                         self.privmsg(event.source.nick, "Login successful!")
                     else:
@@ -90,12 +100,15 @@ class IRC(irc.bot.SingleServerIRCBot):
                         self.auth.logout(event.source.nick)
                         self.privmsg(event.source.nick, "Logout successful!")
                     else:
-                        self.privmsg(event.source.nick, "You are not logged in.")
+                        self.privmsg(event.source.nick,
+                                     "You are not logged in.")
                 elif split[0][1:] == "loggedin":
                     if self.auth.check(event.source.nick):
-                        self.privmsg(event.source.nick, "Successfully logged in!")
+                        self.privmsg(event.source.nick,
+                                     "Successfully logged in!")
                     else:
-                        self.privmsg(event.source.nick, "Not currently logged in.")
+                        self.privmsg(event.source.nick,
+                                     "Not currently logged in.")
 
     def on_nick(self, nick, event):
         old_name = event.source.nick
