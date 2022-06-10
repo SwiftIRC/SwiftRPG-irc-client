@@ -11,6 +11,16 @@ class Game:
         while True:
             time.sleep(1)
 
+    async def xp(self, level):
+        return int(level + 10 * level ** 3)
+
+    async def level(self, xp):
+        total = 0
+        for i in range(0, 101):
+            if await self.xp(i) > xp:
+                return i-1
+        return 100
+
     async def process_response(self, command, target, response):
         if target != None:
             command(target, response)
@@ -66,13 +76,3 @@ class Game:
         # Cooking
         elif message[1:] == "cook":
             pass
-
-    async def xp(self, level):
-        return int(level + 10 * level ** 3)
-
-    async def level(self, xp):
-        total = 0
-        for i in range(0, 101):
-            if await self.xp(i) > xp:
-                return i-1
-        return 100
