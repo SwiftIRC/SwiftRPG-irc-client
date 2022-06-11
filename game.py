@@ -18,10 +18,9 @@ class Game:
             time.sleep(1)
 
     async def xp(self, level):
-        return int(level + 10 * level ** 3)
+        return level + 10 * level ** 3
 
     async def level(self, xp):
-        total = 0
         for i in range(0, 101):
             if await self.xp(i) > xp:
                 return i-1
@@ -84,6 +83,10 @@ class Game:
             pass
         # Woodcutting
         elif message[1:] == "chop":
+            response = await self.http_post(
+                command, target, token, 'woodcutting/chop')
+            if response:
+                await self.process_response(command, target, "Woodcutting: {} - Logs: {}".format(response.get('woodcutting', 0), response.get('logs', 0)))
             pass
         # Mining
         elif message[1:] == "mine":

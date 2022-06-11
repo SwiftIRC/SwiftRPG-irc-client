@@ -46,7 +46,7 @@ class Discord:
         global config
         global client
 
-        client.run(config["TOKEN"])
+        client.run(config["DISCORD_TOKEN"])
 
     def close(self):
         global client

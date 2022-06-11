@@ -22,20 +22,22 @@ discord_thread_lock = threading.Lock()
 game_thread_lock = threading.Lock()
 
 config = {
-    'TOKEN': os.getenv('TOKEN'),
+    'DISCORD_TOKEN': os.getenv('DISCORD_TOKEN'),
     'NICK': os.getenv('NICK'),
     'SERVER': os.getenv('SERVER'),
     'PORT': int(os.getenv('PORT')),
     'CHANNELS': json.loads(os.getenv('CHANNELS'))
 }
 
+
 def discord(argv, game, auth):
     print("Connecting to Discord... ({})".format(argv))
 
     discord_process = Discord(config, game, auth)
     discord_process.set_thread_lock(discord_thread_lock)
-    
+
     discord_process.run()
+
 
 def irc(argv, game, auth):
     print("Connecting to IRC... ({})".format(argv))
@@ -49,6 +51,7 @@ def irc(argv, game, auth):
 
     return thread, irc_process
 
+
 def input_thread():
     input_thread = threading.Thread(target=accept_input)
     input_thread.daemon = True
@@ -56,15 +59,17 @@ def input_thread():
 
     return input_thread
 
+
 def accept_input():
 
     print("Accepting input...")
     while True:
         cmd = input("$ ")
 
-        ## TODO: Add commands
+        # TODO: Add commands
         if cmd == "exit":
             exit(0)
+
 
 def game_thread():
     game = Game()
@@ -79,13 +84,14 @@ def main(argv):
     gaming_thread, game = game_thread()
 
     irc_thread, irc_process = irc(argv, game, auth)
-    
-    discord(argv, game, auth) # This keeps the main thread alive
-    irc_process.close() # If we reach here, then close the IRC connection
+
+    discord(argv, game, auth)  # This keeps the main thread alive
+    irc_process.close()  # If we reach here, then close the IRC connection
 
 
 def handler(signum, frame):
     exit(0)
+
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, handler)
