@@ -32,14 +32,20 @@ class Game:
         else:
             await command(response)
 
+    async def process_private_response(self, command, target, response):
+        if target != None:
+            command(target, response)
+        else:
+            await target.send(response)
+
     async def command(self, auth, command, target, author, message):
-        character = await auth.get_character(author)
-        token = await auth.get_token(author)
+        character = await auth.get_character(str(author))
+        token = await auth.get_token(str(author))
         split = message.split()
         if message[1:] == 'foo':
             await self.process_response(command, target, "What's up, {}?".format(author))
-        elif message[1:] == 'bar':
-            await self.process_response(command, target, "Hello, {}!".format(author))
+        elif message[1:] == 'help':
+            await self.process_private_response(command, author, "https://rpg.swiftirc.net/help")
         elif split[0][1:] == 'xp':
             if len(split) != 2:
                 await self.process_response(command, target, "Usage: {} <level>".format(split[0]))

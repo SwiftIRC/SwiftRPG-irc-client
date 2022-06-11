@@ -57,7 +57,11 @@ class IRC(irc.bot.SingleServerIRCBot):
                 print("[IRC] [{}] ({}) {}".format(
                     event.target, event.source.nick, message))
                 if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
-                    if not self.auth.check(event.source.nick):
+                    if message[1:] == "help":
+                        self.privmsg(event.source.nick,
+                                     "{}/help".format(self.config['HOSTNAME']))
+                        return
+                    elif not self.auth.check(event.source.nick):
                         self.privmsg(event.source.nick,
                                      "You are not logged in.")
                         return

@@ -107,10 +107,13 @@ async def on_message(message):
                 else:
                     await message.channel.send("Not currently logged in.")
         elif message.channel.id in channels:
-            if not auth.check(nick):
-                await nick.send("You are not logged in.")
+            if content[1:] == "help":
+                await message.author.send("{}/help".format(config['HOSTNAME']))
+                return
+            elif not auth.check(nick):
+                await message.author.send("You are not logged in.")
                 return
             print('[Discord] [#{}] CMD DETECTED: ({}) {}'.format(
                 message.channel, nick, content))
             # channel = client.get_channel(message.channel.id)
-            await game.command(auth, message.channel.send, None, nick, content)
+            await game.command(auth, message.channel.send, None, message.author, content)
