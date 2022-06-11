@@ -106,6 +106,8 @@ async def on_message(message):
                     await message.channel.send("Successfully logged in!")
                 else:
                     await message.channel.send("Not currently logged in.")
+            elif content[1:] == "help":
+                await message.author.send("{}/help".format(config['HOSTNAME']))
         elif message.channel.id in channels:
             if content[1:] == "help":
                 await message.author.send("{}/help".format(config['HOSTNAME']))
@@ -115,5 +117,4 @@ async def on_message(message):
                 return
             print('[Discord] [#{}] CMD DETECTED: ({}) {}'.format(
                 message.channel, nick, content))
-            # channel = client.get_channel(message.channel.id)
             await game.command(auth, message.channel.send, None, message.author, content)

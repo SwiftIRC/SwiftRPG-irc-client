@@ -113,6 +113,9 @@ class IRC(irc.bot.SingleServerIRCBot):
                     else:
                         self.privmsg(event.source.nick,
                                      "Not currently logged in.")
+                elif split[0][1:] == "help":
+                    self.privmsg(event.source.nick,
+                                 "{}/help".format(self.config['HOSTNAME']))
 
     def on_nick(self, nick, event):
         old_name = event.source.nick
