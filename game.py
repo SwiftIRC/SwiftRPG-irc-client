@@ -46,7 +46,7 @@ class Game:
             await self.process_response(command, target, "What's up, {}?".format(author))
         elif message[1:] == 'help':
             await self.process_private_response(command, author, "https://rpg.swiftirc.net/help")
-        elif split[0][1:] == 'xp':
+        elif split[0][1:] == 'xp' or split[0][1:] == 'exp':
             if len(split) != 2:
                 await self.process_response(command, target, "Usage: {} <level>".format(split[0]))
                 return
@@ -63,22 +63,22 @@ class Game:
             response = await self.http_post(
                 command, target, token, 'thieving/pickpocket')
             if response:
-                await self.process_response(command, target, "Thieving: {} - Gold: {}".format(response.get('thieving', 0), response.get('gold', 0)))
+                await self.process_response(command, target, "Thieving: {} ({}xp) - Gold: {}".format(await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'steal':
             response = await self.http_post(
                 command, target, token, 'thieving/steal')
             if response:
-                await self.process_response(command, target, "Thieving: {} - Gold: {}".format(response.get('thieving', 0), response.get('gold', 0)))
+                await self.process_response(command, target, "Thieving: {} ({}xp) - Gold: {}".format(await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'pilfer':
             response = await self.http_post(
                 command, target, token, 'thieving/pilfer')
             if response:
-                await self.process_response(command, target, "Thieving: {} - Gold: {}".format(response.get('thieving', 0), response.get('gold', 0)))
+                await self.process_response(command, target, "Thieving: {} ({}xp) - Gold: {}".format(await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'plunder':
             response = await self.http_post(
                 command, target, token, 'thieving/plunder')
             if response:
-                await self.process_response(command, target, "Thieving: {} - Gold: {}".format(response.get('thieving', 0), response.get('gold', 0)))
+                await self.process_response(command, target, "Thieving: {} ({}xp) - Gold: {}".format(await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
             pass
         # Fishing
         elif message[1:] == "net":
@@ -92,7 +92,7 @@ class Game:
             response = await self.http_post(
                 command, target, token, 'woodcutting/chop')
             if response:
-                await self.process_response(command, target, "Woodcutting: {} - Logs: {}".format(response.get('woodcutting', 0), response.get('logs', 0)))
+                await self.process_response(command, target, "Woodcutting: {} ({}xp) - Logs: {}".format(await self.level(response.get('woodcutting', 0)), response.get('woodcutting', 0), response.get('logs', 0)))
             pass
         # Mining
         elif message[1:] == "mine":
