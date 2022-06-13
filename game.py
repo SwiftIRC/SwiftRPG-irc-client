@@ -8,10 +8,20 @@ import time
 
 class Game:
     ssl_verify = True
+    discord_privmsg = None
+    irc_privmsg = None
+    config = {}
 
-    def __init__(self):
+    def __init__(self, config):
         if os.getenv('SSL_VERIFY'):
             self.ssl_verify = bool(int(os.getenv('SSL_VERIFY')))
+        self.config = config
+
+    def set_discord_privmsg(self):
+        self.discord_privmsg = self.discord_privmsg
+
+    def set_irc_privmsg(self):
+        self.irc_privmsg = self.irc_privmsg
 
     def start(self):
         while True:
@@ -27,9 +37,10 @@ class Game:
         return 100
 
     async def process_response(self, command, target, response):
-        if target != None:
+        if target:
             command(target, response)
         else:
+            self.discord_target = command
             await command(response)
 
     async def process_private_response(self, command, target, response):
@@ -45,7 +56,7 @@ class Game:
         if message[1:] == 'foo':
             await self.process_response(command, target, "What's up, {}?".format(author))
         elif message[1:] == 'help':
-            await self.process_private_response(command, author, "https://rpg.swiftirc.net/help")
+            await self.process_private_response(command, author, "{}/help".format(os.getenv('HOSTNAME')))
         elif split[0][1:] == 'xp' or split[0][1:] == 'exp':
             if len(split) != 2:
                 await self.process_response(command, target, "Usage: {} <level>".format(split[0]))
@@ -124,5 +135,5 @@ class Game:
         elif response.status_code == 200:
             return response.json()
         else:
-            print("ERROR: game.py [104]: ",
+            print("ERROR: game.py [127]: ",
                   response.status_code, response.text)

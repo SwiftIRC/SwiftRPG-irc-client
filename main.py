@@ -73,7 +73,7 @@ def accept_input():
 
 
 def game_thread():
-    game = Game()
+    game = Game(config)
     gaming_thread = threading.Thread(target=game.start)
     gaming_thread.daemon = True
     gaming_thread.start()

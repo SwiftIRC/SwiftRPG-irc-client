@@ -27,10 +27,11 @@ class Discord:
         global game
         global auth
 
-        channels = {conf['CHANNELS'][channel]                    : channel for channel in conf['CHANNELS']}
+        channels = {conf['CHANNELS'][channel]: channel for channel in conf['CHANNELS']}
 
         config = conf
         game = g
+        game.set_discord_privmsg(self.privmsg)
         auth = a
 
     def set_thread_lock(self, lock):
@@ -45,6 +46,7 @@ class Discord:
     def run(self):
         global config
         global client
+        global game
 
         client.run(config["DISCORD_TOKEN"])
 
@@ -81,40 +83,40 @@ async def on_message(message):
         if len(message.attachments) > 0:
             content += ' ' + message.attachments[0].url
 
-    if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
-        nick = '{}'.format(message.author)
-        if "{}".format(message.channel) == "Direct Message with {}".format(nick):
-            print('[Discord] [{}] PM CMD DETECTED: ({}) {}'.format(
-                message.channel, nick, content))
-            split = content.split()
-            if split[0][1:] == "login":
-                if len(split) != 3:
-                    await message.channel.send("Syntax: {} <username> <password>".format(split[0]))
+        if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
+            nick = '{}'.format(message.author)
+            if "{}".format(message.channel) == "Direct Message with {}".format(nick):
+                print('[Discord] [{}] PM CMD DETECTED: ({}) {}'.format(
+                    message.channel, nick, content))
+                split = content.split()
+                if split[0][1:] == "login":
+                    if len(split) != 3:
+                        await message.channel.send("Syntax: {} <username> <password>".format(split[0]))
+                        return
+                    if auth.login(nick, split[1], split[2]):
+                        await message.channel.send("Login successful!")
+                    else:
+                        await message.channel.send("Login failed!")
+                elif content[1:] == "logout":
+                    if auth.check(nick):
+                        auth.logout(nick)
+                        await message.channel.send("Logout successful!")
+                    else:
+                        await message.channel.send("You are not logged in.")
+                elif content[1:] == "loggedin":
+                    if auth.check(nick):
+                        await message.channel.send("Successfully logged in!")
+                    else:
+                        await message.channel.send("Not currently logged in.")
+                elif content[1:] == "help":
+                    await message.author.send("{}/help".format(config['HOSTNAME']))
+            elif message.channel.id in channels:
+                if content[1:] == "help":
+                    await message.author.send("{}/help".format(config['HOSTNAME']))
                     return
-                if auth.login(nick, split[1], split[2]):
-                    await message.channel.send("Login successful!")
-                else:
-                    await message.channel.send("Login failed!")
-            elif content[1:] == "logout":
-                if auth.check(nick):
-                    auth.logout(nick)
-                    await message.channel.send("Logout successful!")
-                else:
-                    await message.channel.send("You are not logged in.")
-            elif content[1:] == "loggedin":
-                if auth.check(nick):
-                    await message.channel.send("Successfully logged in!")
-                else:
-                    await message.channel.send("Not currently logged in.")
-            elif content[1:] == "help":
-                await message.author.send("{}/help".format(config['HOSTNAME']))
-        elif message.channel.id in channels:
-            if content[1:] == "help":
-                await message.author.send("{}/help".format(config['HOSTNAME']))
-                return
-            elif not auth.check(nick):
-                await message.author.send("You are not logged in.")
-                return
-            print('[Discord] [#{}] CMD DETECTED: ({}) {}'.format(
-                message.channel, nick, content))
-            await game.command(auth, message.channel.send, None, message.author, content)
+                elif not auth.check(nick):
+                    await message.author.send("You are not logged in.")
+                    return
+                print('[Discord] [#{}] CMD DETECTED: ({}) {}'.format(
+                    message.channel, nick, content))
+                await game.command(auth, message.channel.send, None, message.author, content)

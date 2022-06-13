@@ -26,6 +26,7 @@ class IRC(irc.bot.SingleServerIRCBot):
 
         self.config = config
         self.game = game
+        self.game.set_irc_privmsg(self.privmsg)
         self.auth = auth
 
     def set_discord(self, discordd):
