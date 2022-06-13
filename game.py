@@ -25,7 +25,7 @@ class Game:
 
     def start(self):
         while True:
-            time.sleep(1)
+            time.sleep(300)
 
     async def xp(self, level):
         return level + 10 * level ** 3
