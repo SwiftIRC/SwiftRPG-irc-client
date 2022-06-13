@@ -17,11 +17,11 @@ class Game:
             self.ssl_verify = bool(int(os.getenv('SSL_VERIFY')))
         self.config = config
 
-    def set_discord_privmsg(self):
-        self.discord_privmsg = self.discord_privmsg
+    def set_discord_privmsg(self, discord_privmsg):
+        self.discord_privmsg = discord_privmsg
 
-    def set_irc_privmsg(self):
-        self.irc_privmsg = self.irc_privmsg
+    def set_irc_privmsg(self, irc_privmsg):
+        self.irc_privmsg = irc_privmsg
 
     def start(self):
         while True:
