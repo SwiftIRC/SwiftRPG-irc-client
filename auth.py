@@ -19,12 +19,13 @@ class Auth:
         self.read_cache()
 
     def get_cipher(self):
-        token = os.getenv('API_TOKEN')
+        token = bytes(os.getenv('API_TOKEN'), 'latin-1')
 
         key = (token * 16)[:32]
         iv = key[:16]
 
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv),
+                        backend=default_backend())
 
         encryptor = cipher.encryptor()
         decryptor = cipher.decryptor()
