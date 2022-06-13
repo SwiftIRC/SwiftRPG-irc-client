@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import string
-import requests
-import os
-
+import datetime
 import json
+import os
+import requests
+import string
+
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
@@ -38,7 +39,8 @@ class Auth:
 
         with open(filename, 'wb') as f:
             json_bytes = bytes(json.dumps(self.auth), 'utf-8')
-            encrypted_json = (encryptor.update(json_bytes) +
+            padding = (16 - len(json_bytes) % 16) * b' '
+            encrypted_json = (encryptor.update(json_bytes + padding) +
                               encryptor.finalize()).decode('latin-1')
             encrypted_bytes = bytes(encrypted_json, 'latin-1')
             f.write(encrypted_bytes)
@@ -50,13 +52,14 @@ class Auth:
         try:
             if os.path.isfile(filename):
                 with open(filename, 'rb') as f:
-                    encrypted_bytes = f.read()
+                    encrypted_bytes = f.read().strip()
                     encrypted_json = decryptor.update(
                         encrypted_bytes) + decryptor.finalize()
                     JSON = encrypted_json.decode('latin-1')
                     self.auth = json.loads(JSON)
-        except json.decoder.JSONDecodeError:
-            pass
+                    print(self.auth)
+        except json.decoder.JSONDecodeError as e:
+            print(e)
 
     def login(self, nick: string, username: string, password: string):
         if '{}'.format(nick) in self.auth and self.auth[nick]['character'].lower() == username.lower():
@@ -71,14 +74,19 @@ class Auth:
                                  headers=headers)
 
         if response.status_code == 200:
+            future = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+
             self.auth[nick] = {'character': username,
-                               'token': response.json().get('token', '')}
+                               'token': response.json().get('token', ''),
+                               'expiration': str(future)}
             self.write_cache()
             return True
         return False
 
     def check(self, nick):
-        return (True if '{}'.format(nick) in self.auth else False)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=8)
+
+        return (True if datetime.datetime.utcnow() - datetime.datetime.fromisoformat(self.auth.get(str(nick), {}).get('expiration', str(past))) < datetime.timedelta(days=7) else False)
 
     def logout(self, nick):
         del self.auth[nick]
