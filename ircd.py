@@ -100,6 +100,21 @@ class IRC(irc.bot.SingleServerIRCBot):
                     else:
                         # actual auth pls
                         self.privmsg(event.source.nick, "Login failed!")
+                elif split[0][1:] == "register":
+                    if len(split) != 3:
+                        self.privmsg(
+                            event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
+                        return
+                    if self.auth.check(event.source.nick):
+                        self.privmsg(event.source.nick,
+                                     "You are already logged in.")
+                    elif self.auth.register(split[1], split[2]):
+                        self.privmsg(event.source.nick,
+                                     "Registration successful! Now you may log in.")
+                    else:
+                        # actual auth pls
+                        self.privmsg(
+                            event.source.nick, "Registration failed! Common failures: username already exists, password too short.")
                 elif split[0][1:] == "logout":
                     if self.auth.check(event.source.nick):
                         self.auth.logout(event.source.nick)

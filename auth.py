@@ -57,7 +57,6 @@ class Auth:
                         encrypted_bytes) + decryptor.finalize()
                     JSON = encrypted_json.decode('latin-1')
                     self.auth = json.loads(JSON)
-                    print(self.auth)
         except json.decoder.JSONDecodeError as e:
             print(e)
 
@@ -82,6 +81,29 @@ class Auth:
             self.write_cache()
             return True
         return False
+
+    def register(self, username: string, password: string):
+        headers = {'X-Bot-Token': os.getenv('API_TOKEN')}
+
+        response = requests.post("{}/api/auth/register".format(os.getenv('HOSTNAME')),
+                                 data={'name': username,
+                                       'password': password,
+                                       'password_confirmation': password},
+                                 verify=self.ssl_verify,
+                                 headers=headers)
+
+        print(response.text)
+        print(response.status_code)
+
+        try:
+            response.json()  # We allocate this to test if the JSON is valid
+            if response.status_code == 200:
+                return True
+            return False
+        except json.decoder.JSONDecodeError:
+            return False
+        except:
+            return False
 
     def check(self, nick):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=8)

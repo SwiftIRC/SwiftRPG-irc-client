@@ -95,10 +95,20 @@ async def on_message(message):
                     return
                 if auth.check(nick):
                     await message.channel.send("You are already logged in.")
-                if auth.login(nick, split[1], split[2]):
+                elif auth.login(nick, split[1], split[2]):
                     await message.channel.send("Login successful!")
                 else:
                     await message.channel.send("Login failed!")
+            elif split[0][1:] == "register":
+                if len(split) != 3:
+                    await message.channel.send("Syntax: {} <username> <password>".format(split[0]))
+                    return
+                if auth.check(nick):
+                    await message.channel.send("You are already logged in.")
+                elif auth.register(split[1], split[2]):
+                    await message.channel.send("Registration successful! Now you may log in.")
+                else:
+                    await message.channel.send("Registration failed! Common failures: username already exists, password too short.")
             elif content[1:] == "logout":
                 if auth.check(nick):
                     auth.logout(nick)
