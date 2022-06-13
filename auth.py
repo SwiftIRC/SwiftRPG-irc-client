@@ -37,8 +37,8 @@ class Auth:
         encryptor, _ = self.get_cipher()
 
         with open(filename, 'wb') as f:
-            JSON = json.dump(self.auth)
-            encrypted_json = (encryptor.update(JSON) +
+            json_bytes = bytes(json.dumps(self.auth), 'utf-8')
+            encrypted_json = (encryptor.update(json_bytes) +
                               encryptor.finalize()).decode('latin-1')
             encrypted_bytes = bytes(encrypted_json, 'latin-1')
             f.write(encrypted_bytes)
@@ -47,13 +47,16 @@ class Auth:
         filename = os.getenv('CACHE_FILE', '.cache')
         _, decryptor = self.get_cipher()
 
-        if os.path.isfile(filename):
-            with open(filename, 'rb') as f:
-                encrypted_bytes = f.read()
-                encrypted_json = decryptor.update(
-                    encrypted_bytes) + decryptor.finalize()
-                JSON = encrypted_json.decode('latin-1')
-                self.auth = json.loads(JSON)
+        try:
+            if os.path.isfile(filename):
+                with open(filename, 'rb') as f:
+                    encrypted_bytes = f.read()
+                    encrypted_json = decryptor.update(
+                        encrypted_bytes) + decryptor.finalize()
+                    JSON = encrypted_json.decode('latin-1')
+                    self.auth = json.loads(JSON)
+        except json.decoder.JSONDecodeError:
+            pass
 
     def login(self, nick: string, username: string, password: string):
         if '{}'.format(nick) in self.auth and self.auth[nick]['character'].lower() == username.lower():
