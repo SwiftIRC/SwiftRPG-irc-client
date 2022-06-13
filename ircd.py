@@ -87,7 +87,7 @@ class IRC(irc.bot.SingleServerIRCBot):
                 print('[IRC] [{}] PM CMD DETECTED: ({}) {}'.format(
                     event.target, event.source.nick, message))
 
-                if split[0][1:] == "login" or split[0][1:] == "register":
+                if split[0][1:] == "login":
                     if len(split) != 3:
                         self.privmsg(
                             event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
