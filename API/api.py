@@ -7,9 +7,9 @@ async def post(self, command, target, token, endpoint, data={}):
                'X-Bot-Token': os.getenv('API_TOKEN')}
 
     response = requests.post("{}/api/{}".format(os.getenv('HOSTNAME'), endpoint),
-        data=data,
-        verify=self.ssl_verify,
-        headers=headers)
+                             data=data,
+                             verify=self.ssl_verify,
+                             headers=headers)
 
     if response.status_code == 419:
         await self.process_response(command, target, "Error: user session expired")
@@ -25,11 +25,11 @@ async def post(self, command, target, token, endpoint, data={}):
 
 async def get(self, command, target, token, endpoint):
     headers = {'Authorization': 'Bearer {}'.format(token),
-        'X-Bot-Token': os.getenv('API_TOKEN')}
+               'X-Bot-Token': os.getenv('API_TOKEN')}
 
     response = requests.get("{}/api/{}".format(os.getenv('HOSTNAME'), endpoint),
-        verify=self.ssl_verify,
-        headers=headers)
+                            verify=self.ssl_verify,
+                            headers=headers)
 
     if response.status_code == 419:
         await self.process_response(command, target, "Error: user session expired")

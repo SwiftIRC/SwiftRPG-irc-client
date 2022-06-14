@@ -79,22 +79,22 @@ class Game:
         # Thieving
         elif message[1:] == 'pickpocket':
             response = await api.post(
-                command, target, token, 'thieving/pickpocket')
+                self, command, target, token, 'thieving/pickpocket')
             if response:
                 await self.process_response(command, target, "[{}] 🕵️ Thieving: {} ({}xp) - Gold: {}".format(character, await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'steal':
             response = await api.post(
-                command, target, token, 'thieving/steal')
+                self, command, target, token, 'thieving/steal')
             if response:
                 await self.process_response(command, target, "[{}] 🕵️ Thieving: {} ({}xp) - Gold: {}".format(character, await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'pilfer':
             response = await api.post(
-                command, target, token, 'thieving/pilfer')
+                self, command, target, token, 'thieving/pilfer')
             if response:
                 await self.process_response(command, target, "[{}] 🕵️ Thieving: {} ({}xp) - Gold: {}".format(character, await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'plunder':
             response = await api.post(
-                command, target, token, 'thieving/plunder')
+                self, command, target, token, 'thieving/plunder')
             if response:
                 await self.process_response(command, target, "[{}] 🕵️ Thieving: {} ({}xp) - Gold: {}".format(character, await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
             pass
@@ -108,7 +108,7 @@ class Game:
         # Woodcutting
         elif message[1:] == "chop":
             response = await api.post(
-                command, target, token, 'woodcutting/chop')
+                self, command, target, token, 'woodcutting/chop')
             if response:
                 await self.process_response(command, target, "[{}] 🪓 Woodcutting: {} ({}xp) - Logs: {}".format(character, await self.level(response.get('woodcutting', 0)), response.get('woodcutting', 0), response.get('logs', 0)))
             pass
@@ -124,5 +124,3 @@ class Game:
         # Cooking
         elif message[1:] == "cook":
             pass
-
-
