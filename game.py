@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import math
+import API.api as api
 import os
-import requests
 import time
 
 
@@ -71,30 +70,30 @@ class Game:
             await self.process_response(command, target, "XP of {} is equivalent to level {}".format(split[1], level))
         elif split[0][1:] == 'stats':
             if len(split) != 2:
-                response = await self.http_get(command, target, token, 'stats')
+                response = await api.get(command, target, token, 'stats')
             else:
                 character = split[1]
-                response = await self.http_get(command, target, token, 'stats/{}'.format(split[1]))
+                response = await api.get(command, target, token, 'stats/{}'.format(split[1]))
             print(response)
             await self.process_response(command, target, "Stats: {} - Thieving: {} - Woodcutting: {}".format(character, response['thieving'], response['woodcutting']))
         # Thieving
         elif message[1:] == 'pickpocket':
-            response = await self.http_post(
+            response = await api.post(
                 command, target, token, 'thieving/pickpocket')
             if response:
                 await self.process_response(command, target, "[{}] 🕵️ Thieving: {} ({}xp) - Gold: {}".format(character, await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'steal':
-            response = await self.http_post(
+            response = await api.post(
                 command, target, token, 'thieving/steal')
             if response:
                 await self.process_response(command, target, "[{}] 🕵️ Thieving: {} ({}xp) - Gold: {}".format(character, await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'pilfer':
-            response = await self.http_post(
+            response = await api.post(
                 command, target, token, 'thieving/pilfer')
             if response:
                 await self.process_response(command, target, "[{}] 🕵️ Thieving: {} ({}xp) - Gold: {}".format(character, await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
         elif message[1:] == 'plunder':
-            response = await self.http_post(
+            response = await api.post(
                 command, target, token, 'thieving/plunder')
             if response:
                 await self.process_response(command, target, "[{}] 🕵️ Thieving: {} ({}xp) - Gold: {}".format(character, await self.level(response.get('thieving', 0)), response.get('thieving', 0), response.get('gold', 0)))
@@ -108,7 +107,7 @@ class Game:
             pass
         # Woodcutting
         elif message[1:] == "chop":
-            response = await self.http_post(
+            response = await api.post(
                 command, target, token, 'woodcutting/chop')
             if response:
                 await self.process_response(command, target, "[{}] 🪓 Woodcutting: {} ({}xp) - Logs: {}".format(character, await self.level(response.get('woodcutting', 0)), response.get('woodcutting', 0), response.get('logs', 0)))
@@ -126,41 +125,4 @@ class Game:
         elif message[1:] == "cook":
             pass
 
-    async def http_post(self, command, target, token, endpoint, data={}):
-        headers = {'Authorization': 'Bearer {}'.format(token),
-                   'X-Bot-Token': os.getenv('API_TOKEN')}
 
-        response = requests.post("{}/api/{}".format(os.getenv('HOSTNAME'), endpoint),
-                                 data=data,
-                                 verify=self.ssl_verify,
-                                 headers=headers)
-
-        if response.status_code == 419:
-            await self.process_response(command, target, "Error: user session expired")
-        elif response.status_code == 403:
-            print(response.text)
-            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
-        elif response.status_code == 200:
-            return response.json()
-        else:
-            print("ERROR: game.py [145]: ",
-                  response.status_code, response.text)
-
-    async def http_get(self, command, target, token, endpoint):
-        headers = {'Authorization': 'Bearer {}'.format(token),
-                   'X-Bot-Token': os.getenv('API_TOKEN')}
-
-        response = requests.get("{}/api/{}".format(os.getenv('HOSTNAME'), endpoint),
-                                verify=self.ssl_verify,
-                                headers=headers)
-
-        if response.status_code == 419:
-            await self.process_response(command, target, "Error: user session expired")
-        elif response.status_code == 403:
-            print(response.text)
-            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
-        elif response.status_code == 200:
-            return response.json()
-        else:
-            print("ERROR: game.py [164]: ",
-                  response.status_code, response.text)
