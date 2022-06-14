@@ -27,10 +27,10 @@ class Game:
         while True:
             time.sleep(300)
 
-    async def xp(self, level):
+    async def xp(self, level: int):
         return level + 10 * level ** 3
 
-    async def level(self, xp):
+    async def level(self, xp: int):
         for i in range(0, 101):
             if await self.xp(i) > xp:
                 return i-1
@@ -73,9 +73,10 @@ class Game:
             if len(split) != 2:
                 response = await self.http_get(command, target, token, 'stats')
             else:
+                character = split[1]
                 response = await self.http_get(command, target, token, 'stats/{}'.format(split[1]))
             print(response)
-            await self.process_response(command, target, "Stats: {}".format(response))
+            await self.process_response(command, target, "Stats: {} - Thieving: {} - Woodcutting: {}".format(character, response['thieving'], response['woodcutting']))
         # Thieving
         elif message[1:] == 'pickpocket':
             response = await self.http_post(
