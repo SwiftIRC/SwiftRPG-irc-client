@@ -1,5 +1,7 @@
 import commands.ChopCommand as command_chop
 import commands.thieving.PickpocketCommand as command_pickpocket
+
+
 class CommandController:
     commands = None
     auth = None
@@ -17,9 +19,8 @@ class CommandController:
             "pickpocket": command_pickpocket.exec
         }
 
-
     async def run(self, command, target, author, message, character, token):
-        split = self.message.split()
+        split = message.split()
         command_string = split[0][1:]
 
         if command_string in self.commands:

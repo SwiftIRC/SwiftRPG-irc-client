@@ -40,7 +40,8 @@ class IRC(irc.bot.SingleServerIRCBot):
         self.connection.quit("Adios!")
 
     def privmsg(self, target, message):
-        self.connection.privmsg(target, message.strip())
+        if message:
+            self.connection.privmsg(target, message.strip())
 
     def on_nicknameinuse(self, connection, event):
         connection.nick(connection.get_nickname() + "_")

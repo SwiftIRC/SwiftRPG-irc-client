@@ -19,7 +19,7 @@ async def post(self, command, target, token, endpoint, data={}):
     elif response.status_code == 200:
         return response.json()
     else:
-        print("ERROR: game.py [145]: ",
+        print("ERROR: api.py [22]: ",
               response.status_code, response.text)
 
 
@@ -39,5 +39,5 @@ async def get(self, command, target, token, endpoint):
     elif response.status_code == 200:
         return response.json()
     else:
-        print("ERROR: game.py [164]: ",
+        print("ERROR: api.py [42]: ",
               response.status_code, response.text)

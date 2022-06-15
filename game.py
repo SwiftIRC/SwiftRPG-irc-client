@@ -53,7 +53,7 @@ class Game:
     async def command(self, auth, command, target, author, message):
         character = await auth.get_character(str(author))
         token = await auth.get_token(str(author))
-        response = await self.game_controller.run(self, command, target, author, message, character, token)
+        response = await self.game_controller.run(command, target, author, message, character, token)
         await self.process_response(command, target, response)
 
     #     split = message.split()
