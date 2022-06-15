@@ -1,7 +1,5 @@
 import commands.ChopCommand as command_chop
 import commands.thieving.PickpocketCommand as command_pickpocket
-
-
 class CommandController:
     commands = None
     auth = None
