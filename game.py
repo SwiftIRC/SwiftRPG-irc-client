@@ -70,10 +70,10 @@ class Game:
             await self.process_response(command, target, "XP of {} is equivalent to level {}".format(split[1], level))
         elif split[0][1:] == 'stats':
             if len(split) != 2:
-                response = await api.get(command, target, token, 'stats')
+                response = await api.get(self, command, target, token, 'stats')
             else:
                 character = split[1]
-                response = await api.get(command, target, token, 'stats/{}'.format(split[1]))
+                response = await api.get(self, command, target, token, 'stats/{}'.format(split[1]))
             print(response)
             await self.process_response(command, target, "Stats: {} - Thieving: {} - Woodcutting: {}".format(character, response['thieving'], response['woodcutting']))
         # Thieving
