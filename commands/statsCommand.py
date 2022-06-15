@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import API.api as api
+
 
 async def exec(game, command, target, author, message, character, token):
     args = message.split()[0][1:]

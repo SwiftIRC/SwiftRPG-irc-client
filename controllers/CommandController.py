@@ -2,6 +2,9 @@ import commands.ChopCommand as command_chop
 import commands.thieving.PickpocketCommand as command_pickpocket
 import commands.statsCommand as command_stats
 
+import commands.map.MoveCommand as command_move
+import commands.map.LookCommand as command_look
+
 
 class CommandController:
     commands = None
@@ -18,7 +21,9 @@ class CommandController:
         self.commands = {
             "chop": command_chop.exec,
             "pickpocket": command_pickpocket.exec,
-            "stats": command_stats.exec
+            "stats": command_stats.exec,
+            "move": command_move.exec,
+            "look": command_look.exec,
         }
 
     async def run(self, command, target, author, message, character, token):
