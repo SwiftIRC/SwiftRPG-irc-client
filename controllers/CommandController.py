@@ -1,5 +1,6 @@
 import commands.ChopCommand as command_chop
 import commands.thieving.PickpocketCommand as command_pickpocket
+import commands.statsCommand as command_stats
 
 
 class CommandController:
@@ -16,7 +17,8 @@ class CommandController:
         self.game = game
         self.commands = {
             "chop": command_chop.exec,
-            "pickpocket": command_pickpocket.exec
+            "pickpocket": command_pickpocket.exec,
+            "stats": command_stats.exec
         }
 
     async def run(self, command, target, author, message, character, token):
