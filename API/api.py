@@ -1,9 +1,14 @@
 import json
 import os
+from types import FunctionType
 import requests
+import string
 
 
-async def post(self, command, target, token, endpoint, data={}):
+# The `target` parameter can be either a string (from IRC) or a function (from Discord)
+
+
+async def post(self, command: FunctionType, target, token: string, endpoint: string, data={}):
     headers = {'Authorization': 'Bearer {}'.format(token),
                'X-Bot-Token': os.getenv('API_TOKEN')}
 
@@ -20,11 +25,11 @@ async def post(self, command, target, token, endpoint, data={}):
     elif response.status_code == 200:
         return response.json()
     else:
-        print("ERROR: api.py [22]: ",
+        print("ERROR: api.py [24]: ",
               response.status_code, response.text)
 
 
-async def get(self, command, target, token, endpoint):
+async def get(self, command: FunctionType, target, token: string, endpoint: string):
     headers = {'Authorization': 'Bearer {}'.format(token),
                'X-Bot-Token': os.getenv('API_TOKEN')}
 
@@ -41,11 +46,11 @@ async def get(self, command, target, token, endpoint):
         try:
             return response.json()
         except json.decoder.JSONDecodeError:
-            print("ERROR: api.py [43]: ", response.text)
+            print("ERROR: api.py [45]: ", response.text)
             await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [02]')))
         except Exception as e:
-            print("ERROR: api.py [47]: ", e)
+            print("ERROR: api.py [48]: ", e)
             await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [03]')))
     else:
-        print("ERROR: api.py [50]: ",
+        print("ERROR: api.py [51]: ",
               response.status_code, response.text)

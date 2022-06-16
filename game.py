@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
+from types import FunctionType
 import API.api as api
 import os
 import time
 import controllers.CommandController as CommandController
+
+from auth import *
 
 
 class Game:
@@ -50,7 +53,8 @@ class Game:
         else:
             await target.send(response)
 
-    async def command(self, auth, command, target, author, message):
+    # The `target` parameter can be either a string (from IRC) or a function (from Discord)
+    async def command(self, auth: Auth, command: FunctionType, target, author: string, message: string):
         character = await auth.get_character(str(author))
         token = await auth.get_token(str(author))
         response = await self.game_controller.run(command, target, author, message, character, token)
