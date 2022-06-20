@@ -1,6 +1,6 @@
 import commands.ChopCommand as command_chop
 import commands.thieving.PickpocketCommand as command_pickpocket
-import commands.statsCommand as command_stats
+import commands.StatsCommand as command_stats
 
 import commands.map.MoveCommand as command_move
 import commands.map.LookCommand as command_look
