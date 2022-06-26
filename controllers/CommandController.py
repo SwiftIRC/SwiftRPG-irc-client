@@ -1,4 +1,4 @@
-import commands.ChopCommand as command_chop
+import commands.woodcutting.ChopCommand as command_chop
 import commands.thieving.PickpocketCommand as command_pickpocket
 import commands.StatsCommand as command_stats
 
