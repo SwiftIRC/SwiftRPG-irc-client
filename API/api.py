@@ -23,10 +23,16 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
     elif response.status_code == 403:
         await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
     elif response.status_code == 200:
-        print(response.text)
-        return response.json()
+        try:
+            return response.json()
+        except json.decoder.JSONDecodeError:
+            print("ERROR: api.py [29]: ", response.text)
+            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [02]')))
+        except Exception as e:
+            print("ERROR: api.py [32]: ", e)
+            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [03]')))
     else:
-        print("ERROR: api.py [29]: ",
+        print("ERROR: api.py [35]: ",
               response.status_code, response.text)
 
 
@@ -45,11 +51,11 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
         try:
             return response.json()
         except json.decoder.JSONDecodeError:
-            print("ERROR: api.py [51]: ", response.text)
-            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [02]')))
+            print("ERROR: api.py [54]: ", response.text)
+            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [04]')))
         except Exception as e:
-            print("ERROR: api.py [54]: ", e)
-            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [03]')))
+            print("ERROR: api.py [57]: ", e)
+            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [05]')))
     else:
-        print("ERROR: api.py [57]: ",
+        print("ERROR: api.py [60]: ",
               response.status_code, response.text)
