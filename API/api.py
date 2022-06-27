@@ -26,7 +26,7 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
         print(response.text)
         return response.json()
     else:
-        print("ERROR: api.py [28]: ",
+        print("ERROR: api.py [29]: ",
               response.status_code, response.text)
 
 
@@ -48,11 +48,11 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
         try:
             return response.json()
         except json.decoder.JSONDecodeError:
-            print("ERROR: api.py [49]: ", response.text)
+            print("ERROR: api.py [51]: ", response.text)
             await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [02]')))
         except Exception as e:
-            print("ERROR: api.py [52]: ", e)
+            print("ERROR: api.py [54]: ", e)
             await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [03]')))
     else:
-        print("ERROR: api.py [55]: ",
+        print("ERROR: api.py [57]: ",
               response.status_code, response.text)
