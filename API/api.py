@@ -39,11 +39,8 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
                             headers=headers,
                             allow_redirects=False)
 
-    if response.status_code == 302:
+    if response.status_code == 302 or response.status_code == 403:
         await self.process_response(command, target, "Error: user session expired. Please PM the bot `.logout` and then log back in.")
-    elif response.status_code == 403:
-        print(response.text)
-        await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [01]')))
     elif response.status_code == 200:
         try:
             return response.json()
