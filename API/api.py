@@ -45,17 +45,19 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
                             headers=headers,
                             allow_redirects=False)
 
-    if response.status_code == 302 or response.status_code == 403:
+    if response.status_code == 302:
         await self.process_response(command, target, "Error: user session expired. Please PM the bot `.logout` and then log back in.")
+    elif response.status_code == 403:
+        await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
     elif response.status_code == 200:
         try:
             return response.json()
         except json.decoder.JSONDecodeError:
-            print("ERROR: api.py [54]: ", response.text)
+            print("ERROR: api.py [56]: ", response.text)
             await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [04]')))
         except Exception as e:
-            print("ERROR: api.py [57]: ", e)
+            print("ERROR: api.py [59]: ", e)
             await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [05]')))
     else:
-        print("ERROR: api.py [60]: ",
+        print("ERROR: api.py [62]: ",
               response.status_code, response.text)
