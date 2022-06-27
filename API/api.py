@@ -15,14 +15,15 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
     response = requests.post("{}/api/{}".format(os.getenv('HOSTNAME'), endpoint),
                              data=data,
                              verify=self.ssl_verify,
-                             headers=headers)
+                             headers=headers,
+                             allow_redirects=False)
 
-    if response.status_code == 419:
-        await self.process_response(command, target, "Error: user session expired")
+    if response.status_code == 302:
+        await self.process_response(command, target, "Error: user session expired. Please PM the bot `.logout` and then log back in.")
     elif response.status_code == 403:
-        print(response.text)
         await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
     elif response.status_code == 200:
+        print(response.text)
         return response.json()
     else:
         print("ERROR: api.py [28]: ",
@@ -35,10 +36,11 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
 
     response = requests.get("{}/api/{}".format(os.getenv('HOSTNAME'), endpoint),
                             verify=self.ssl_verify,
-                            headers=headers)
+                            headers=headers,
+                            allow_redirects=False)
 
-    if response.status_code == 419:
-        await self.process_response(command, target, "Error: user session expired")
+    if response.status_code == 302:
+        await self.process_response(command, target, "Error: user session expired. Please PM the bot `.logout` and then log back in.")
     elif response.status_code == 403:
         print(response.text)
         await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [01]')))
