@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+async def exec(game, command, target, author, message, character, token):
+    split = message.split()
+
+    if len(split) != 2:
+        await self.process_response(command, target, "Usage: {} <level>".format(split[0]))
+        return
+    xp = await self.xp(int(split[1]))
+    await self.process_response(command, target, "Level {} is equivalent to {} XP".format(split[1], xp))
