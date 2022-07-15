@@ -80,7 +80,6 @@ class Auth:
                                'expiration': str(future)}
             self.write_cache()
 
-            print(self.auth)
             return True
         return False
 
