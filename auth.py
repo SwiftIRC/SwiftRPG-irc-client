@@ -61,7 +61,7 @@ class Auth:
             print(e)
 
     def login(self, nick: string, username: string, password: string):
-        if '{}'.format(nick) in self.auth and self.auth[nick]['character'].lower() == username.lower():
+        if self.check(nick) and self.auth[nick]['character'].lower() == username.lower():
             return True
 
         headers = {'X-Bot-Token': os.getenv('API_TOKEN')}
@@ -79,6 +79,8 @@ class Auth:
                                'token': response.json().get('token', ''),
                                'expiration': str(future)}
             self.write_cache()
+
+            print(self.auth)
             return True
         return False
 
@@ -92,11 +94,8 @@ class Auth:
                                  verify=self.ssl_verify,
                                  headers=headers)
 
-        print(response.text)
-        print(response.status_code)
-
         try:
-            response.json()  # We allocate this to test if the JSON is valid
+            response.json()  # We execute this to test if the JSON is valid
             if response.status_code == 200:
                 return True
             return False
