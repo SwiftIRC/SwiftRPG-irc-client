@@ -22,6 +22,9 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
     except requests.exceptions.ConnectionError:
         await self.process_response(command, target, "Error: connection error. Please try again in a few minutes.")
         return
+    except Exception as e:
+        await self.process_response(command, target, "Error: {}".format(e))
+        return
 
     if response.status_code == 302:
         await self.process_response(command, target, "Error: user session expired. Please PM the bot `.login <username> <password>`.")
@@ -55,6 +58,9 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
         return
     except requests.exceptions.ConnectionError:
         await self.process_response(command, target, "Error: connection error. Please try again in a few minutes.")
+        return
+    except Exception as e:
+        await self.process_response(command, target, "Error: {}".format(e))
         return
 
     if response.status_code == 302:
