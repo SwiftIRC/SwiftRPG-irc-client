@@ -36,7 +36,10 @@ class CommandController:
         split = message.split()
         command_string = split[0][1:]
 
-        if command_string in self.commands:
-            await self.game.process_response(command, target, await self.commands[command_string](self.game, command, target, author, message, character, token))
-        else:
-            await self.game.process_response(command, target, "Error: command not found")
+        try:
+            if command_string in self.commands:
+                await self.game.process_response(command, target, await self.commands[command_string](self.game, command, target, author, message, character, token))
+            else:
+                await self.game.process_response(command, target, "Error: command not found")
+        except Exception as e:
+            await self.game.process_response(command, target, "Error: {}".format(e))
