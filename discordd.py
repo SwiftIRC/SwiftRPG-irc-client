@@ -86,8 +86,6 @@ async def on_message(message):
     if content.startswith('+') or content.startswith('-') or content.startswith('!') or content.startswith('@') or content.startswith('.'):
         nick = '{}'.format(message.author)
         if "{}".format(message.channel) == "Direct Message with {}".format(nick):
-            print('[Discord] [{}] PM CMD DETECTED: ({}) {}'.format(
-                message.channel, nick, content))
             split = content.split()
             if split[0][1:] == "login":
                 if len(split) != 3:

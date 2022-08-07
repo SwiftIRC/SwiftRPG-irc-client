@@ -85,9 +85,6 @@ class IRC(irc.bot.SingleServerIRCBot):
                 event.target, event.source.nick, message))
 
             if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
-                print('[IRC] [{}] PM CMD DETECTED: ({}) {}'.format(
-                    event.target, event.source.nick, message))
-
                 if split[0][1:] == "login":
                     if len(split) != 3:
                         self.privmsg(
