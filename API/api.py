@@ -24,7 +24,7 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
         return
 
     if response.status_code == 302:
-        await self.process_response(command, target, "Error: user session expired. Please PM the bot `.logout` and then log back in.")
+        await self.process_response(command, target, "Error: user session expired. Please PM the bot `.login <username> <password>`.")
     elif response.status_code == 403:
         await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
     elif response.status_code == 200:
@@ -58,7 +58,7 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
         return
 
     if response.status_code == 302:
-        await self.process_response(command, target, "Error: user session expired. Please PM the bot `.logout` and then log back in.")
+        await self.process_response(command, target, "Error: user session expired. Please PM the bot `.login <username> <password>`.")
     elif response.status_code == 403:
         await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
     elif response.status_code == 200:
