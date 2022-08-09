@@ -61,9 +61,6 @@ class Auth:
             print(e)
 
     def login(self, nick: string, username: string, password: string):
-        if self.check(nick) and self.auth[nick]['character'].lower() == username.lower():
-            return True
-
         headers = {'X-Bot-Token': os.getenv('API_TOKEN')}
 
         response = requests.post("{}/api/auth".format(os.getenv('HOSTNAME')),

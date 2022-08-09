@@ -90,10 +90,7 @@ class IRC(irc.bot.SingleServerIRCBot):
                         self.privmsg(
                             event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
                         return
-                    if self.auth.check(event.source.nick):
-                        self.privmsg(event.source.nick,
-                                     "You are already logged in.")
-                    elif self.auth.login(event.source.nick, split[1], split[2]):
+                    if self.auth.login(event.source.nick, split[1], split[2]):
                         self.privmsg(event.source.nick, "Login successful!")
                     else:
                         # actual auth pls

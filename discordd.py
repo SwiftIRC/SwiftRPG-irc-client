@@ -91,9 +91,7 @@ async def on_message(message):
                 if len(split) != 3:
                     await message.channel.send("Syntax: {} <username> <password>".format(split[0]))
                     return
-                if auth.check(nick):
-                    await message.channel.send("You are already logged in.")
-                elif auth.login(nick, split[1], split[2]):
+                if auth.login(nick, split[1], split[2]):
                     await message.channel.send("Login successful!")
                 else:
                     await message.channel.send("Login failed!")
