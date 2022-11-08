@@ -11,7 +11,6 @@ class IRC(irc.bot.SingleServerIRCBot):
 
     config = None
     connection = None
-    discord = None
 
     game = None
     auth = None
@@ -28,9 +27,6 @@ class IRC(irc.bot.SingleServerIRCBot):
         self.game = game
         self.game.set_irc_privmsg(self.privmsg)
         self.auth = auth
-
-    def set_discord(self, discordd):
-        self.discord = discordd
 
     def set_thread_lock(self, lock):
         self.thread_lock = lock
@@ -150,7 +146,5 @@ class IRC(irc.bot.SingleServerIRCBot):
         if self.running:
             self.running = False
             ircd = IRC({"irc": self.config})
-            ircd.set_discord(self.discord)
-            self.discord.set_irc(ircd)
             ircd.set_thread_lock(self.thread_lock)
             ircd.run()

@@ -9,7 +9,6 @@ import threading
 
 from auth import *
 from ircd import *
-from discordd import *
 from game import *
 from dotenv import load_dotenv
 
@@ -18,11 +17,9 @@ print("Loading SwiftRPG...")
 load_dotenv()
 
 irc_thread_lock = threading.Lock()
-discord_thread_lock = threading.Lock()
 game_thread_lock = threading.Lock()
 
 config = {
-    'DISCORD_TOKEN': os.getenv('DISCORD_TOKEN'),
     'NICK': os.getenv('NICK'),
     'SERVER': os.getenv('SERVER'),
     'PORT': int(os.getenv('PORT')),
@@ -31,26 +28,13 @@ config = {
 }
 
 
-def discord(argv, game, auth):
-    print("Connecting to Discord... ({})".format(argv))
-
-    discord_process = Discord(config, game, auth)
-    discord_process.set_thread_lock(discord_thread_lock)
-
-    discord_process.run()
-
-
 def irc(argv, game, auth):
     print("Connecting to IRC... ({})".format(argv))
 
     irc_process = IRC(config, game, auth)
     irc_process.set_thread_lock(irc_thread_lock)
 
-    thread = threading.Thread(target=irc_process.run)
-    thread.daemon = True
-    thread.start()
-
-    return thread, irc_process
+    irc_process.run
 
 
 def input_thread():
@@ -82,12 +66,9 @@ def game_thread():
 
 def main(argv):
     auth = Auth()
-    gaming_thread, game = game_thread()
+    game = game_thread()
 
-    irc_thread, irc_process = irc(argv, game, auth)
-
-    discord(argv, game, auth)  # This keeps the main thread alive
-    irc_process.close()  # If we reach here, then close the IRC connection
+    irc(argv, game, auth)
 
 
 def handler(signum, frame):
