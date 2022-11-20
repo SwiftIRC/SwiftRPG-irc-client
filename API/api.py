@@ -5,7 +5,6 @@ import requests
 import string
 
 
-# The `target` parameter can be either a string (from IRC) or a function (from Discord)
 async def post(self, command: FunctionType, target, token: string, endpoint: string, data={}):
     headers = {'Authorization': 'Bearer {}'.format(token),
                'X-Bot-Token': os.getenv('API_TOKEN')}

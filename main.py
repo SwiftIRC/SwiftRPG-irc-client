@@ -34,7 +34,7 @@ def irc(argv, game, auth):
     irc_process = IRC(config, game, auth)
     irc_process.set_thread_lock(irc_thread_lock)
 
-    irc_process.run
+    irc_process.run()
 
 
 def input_thread():
@@ -66,7 +66,7 @@ def game_thread():
 
 def main(argv):
     auth = Auth()
-    game = game_thread()
+    gaming_thread, game = game_thread()
 
     irc(argv, game, auth)
 
