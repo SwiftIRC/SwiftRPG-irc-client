@@ -35,3 +35,9 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                 buildings = [str(building['id']) + ': ' + building['name']
                              for building in response]
                 return "[{}] 👀 Looking around at buildings. {}".format(character, ', '.join(buildings))
+        elif split[1] in ["north", "east", "south", "west"]:
+            direction = split[1]
+
+            response = await api.get(game, command, target, token, 'map/user/look/' + direction)
+            if response:
+                return "[{}] 👀 Looking {} at [{}, {}]. It appears to be {}".format(character, direction, response['x'], response['y'], response['terrain'][0]['description'].lower())
