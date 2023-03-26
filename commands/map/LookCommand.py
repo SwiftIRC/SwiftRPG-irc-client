@@ -40,4 +40,4 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
 
             response = await api.get(game, command, target, token, 'map/user/look/' + direction)
             if response:
-                return "[{}] 👀 Looking {} at [{}, {}]. It appears to be {}".format(character, direction, response['x'], response['y'], response['terrain'][0]['description'].lower())
+                return "[{}] 👀 Looking {} at [{}, {}]. It appears to be {}".format(character, direction, response['x'], response['y'], response['terrain']['description'].lower())
