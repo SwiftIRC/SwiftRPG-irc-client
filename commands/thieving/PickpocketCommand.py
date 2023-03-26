@@ -8,11 +8,21 @@ async def exec(game, command, target, author, message, character, token):
     if response:
         prefix = '🕵️ Pickpocketing'
         if response.get('experience', 0):
-            return "[{}] {}: {} ({}xp) - Gold: {}".format(character,
-                                                          prefix,
-                                                          await game.level(response.get('experience', 0)),
-                                                          response.get(
-                                                              'experience', 0),
-                                                          response.get('reward', {}).get('total', 0))
+            return "[{}] {}: {} ({}xp) - Gold: {}".format(
+                character,
+                prefix,
+                await game.level(response.get('experience', 0)),
+                response.get(
+                    'experience', 0),
+                response.get('reward', {}).get(
+                    'total', 0)
+            )
         elif response.get('error'):
-            return "[{}] {}: {} ({} hitpoints remaining)".format(character, prefix, response.get('error', ''), response.get('hitpoints', -1))
+            return "[{}] {}: {} ({} hitpoints remaining)".format(
+                character,
+                prefix,
+                response.get(
+                    'error', ''),
+                response.get(
+                    'hitpoints', -1)
+            )
