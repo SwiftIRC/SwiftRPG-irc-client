@@ -5,7 +5,7 @@ import commands.stats.StatsCommand as command_stats
 import commands.stats.XpCommand as command_xp
 import commands.stats.LvlCommand as command_lvl
 
-import commands.map.MoveCommand as command_move
+import commands.map.ExploreCommand as command_explore
 import commands.map.LookCommand as command_look
 
 
@@ -26,7 +26,7 @@ class CommandController:
             "chop": command_chop.exec,
             "pickpocket": command_pickpocket.exec,
             "stats": command_stats.exec,
-            "move": command_move.exec,
+            "explore": command_explore.exec,
             "look": command_look.exec,
             "xp": command_xp.exec,
             "lvl": command_lvl.exec,

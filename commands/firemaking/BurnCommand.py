@@ -7,19 +7,19 @@ async def exec(game, command, target, author, message, character, token):
     response = await api.post(game, command, target, token, 'firemaking/burn')
     if response:
         prefix = '🔥 Firemaking'
-        if response.get('experience', 0):
+        if 'experience' in response:
             return "[{}] {}: {} ({}xp) - Logs: {}".format(
                 character,
                 prefix,
-                await game.level(response.get('experience', 0)),
+                await game.level(response.get('experience')),
                 response.get(
-                    'experience', 0),
+                    'experience'),
                 response.get('reward', {}).get(
                     'total', 0)
             )
-        elif response.get('error'):
+        elif 'error' in response:
             return "[{}] {}: {}".format(
                 character,
                 prefix,
-                response.get('error', '')
+                response.get('error')
             )
