@@ -27,20 +27,28 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
     elif len(split) == 2:
         if split[1] == 'npcs' or split[1] == 'npc':
             returned = await api.get(game, command, target, token, 'map/user/look/npcs')
-            response = returned.get('meta', {}).get('response', None)
 
-            if len(response):
-                npcs = [str(npc['id']) + ': ' + npc['name']
-                        for npc in response]
-                return "[{}] 👀 Looking around at NPCs: {}".format(character, ', '.join(npcs))
+            if returned:
+                response = returned.get('meta', {}).get('response', None)
+
+                if len(response):
+                    npcs = [str(npc['id']) + ': ' + npc['name']
+                            for npc in response]
+                    return "[{}] 👀 Looking around at NPCs: {}".format(character, ', '.join(npcs))
+            else:
+                return "[{}] 👀 Looking around at NPCs: None present".format(character)
         elif split[1] == 'buildings' or split[1] == 'building':
             returned = await api.get(game, command, target, token, 'map/user/look/buildings')
-            response = returned.get('meta', {}).get('response', None)
 
-            if response:
-                buildings = [str(building['id']) + ': ' + building['name']
-                             for building in response]
-                return "[{}] 👀 Looking around at buildings. {}".format(character, ', '.join(buildings))
+            if returned:
+                response = returned.get('meta', {}).get('response', None)
+
+                if response:
+                    buildings = [str(building['id']) + ': ' + building['name']
+                                 for building in response]
+                    return "[{}] 👀 Looking around at buildings. {}".format(character, ', '.join(buildings))
+            else:
+                return "[{}] 👀 Looking around at buildings: None present".format(character)
         elif split[1] in ["north", "east", "south", "west"]:
             direction = split[1]
 
