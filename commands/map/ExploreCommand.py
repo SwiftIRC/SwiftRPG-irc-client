@@ -15,7 +15,8 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
         if returned:
             response = returned.get('meta', {}).get('response', None)
 
-            if 'discovered_by' in response:
-                return "[{}] 🏃 Exploring to [{},{}] {}".format(character, response['x'], response['y'], response['terrain']['description'].lower())
-            elif 'error' in response:
-                return "[{}] 🏃 {}".format(character, response['error'])
+            if response:
+                if 'discovered_by' in response:
+                    return "[{}] 🏃 Exploring to [{},{}], {}".format(character, response['x'], response['y'], response['terrain']['description'].lower())
+                elif 'error' in response:
+                    return "[{}] 🏃 {}".format(character, response['error'])

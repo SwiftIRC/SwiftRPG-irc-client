@@ -8,12 +8,13 @@ async def exec(game, command, target, author, message, character, token):
     if response:
         prefix = '🔥 Firemaking'
         if 'experience' in response:
-            return "[{}] {}: {} ({}xp) - Logs: {}".format(
+            return "[{}] {}: {} ({}xp) | Logs: {} | {} seconds until completion".format(
                 character,
                 prefix,
                 await game.level(response.get('experience')),
                 response.get('experience'),
-                response.get('reward', {}).get('total', 0)
+                response.get('reward', {}).get('total', 0),
+                response.get('seconds_until_tick', 0)
             )
         elif 'error' in response:
             return "[{}] {}: {}".format(

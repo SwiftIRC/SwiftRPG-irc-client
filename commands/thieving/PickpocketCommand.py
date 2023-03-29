@@ -7,7 +7,7 @@ async def exec(game, command, target, author, message, character, token):
     response = await api.post(game, command, target, token, 'thieving/pickpocket')
     if response:
         prefix = '🕵️ Pickpocketing'
-        print(response)
+
         if 'experience' in response:
             return "[{}] {}: {} ({}xp) - Gold: {}".format(
                 character,

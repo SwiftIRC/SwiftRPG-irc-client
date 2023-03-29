@@ -58,4 +58,4 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
 
                 if response:
                     print(response)
-                    return "[{}] 👀 Looking {} at [{}, {}]. It appears to be {}".format(character, direction, response['x'], response['y'], response['terrain'][0]['description'].lower())
+                    return "[{}] 👀 Looking {} at [{}, {}]. There appears to be {}".format(character, direction, response['x'], response['y'], response['terrain']['description'].lower())
