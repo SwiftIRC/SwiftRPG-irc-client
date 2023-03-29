@@ -49,7 +49,7 @@ class CustomRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         print("Received a GET request from", self.client_address)
-        if self.path == '/':
+        if self.path == '/status':
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()

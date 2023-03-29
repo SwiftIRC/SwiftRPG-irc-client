@@ -17,9 +17,6 @@ print("Loading SwiftRPG...")
 
 load_dotenv()
 
-irc_thread_lock = threading.Lock()
-game_thread_lock = threading.Lock()
-
 config = {
     'NICK': os.getenv('NICK'),
     'IRC_SERVER': os.getenv('IRC_SERVER'),
@@ -37,7 +34,6 @@ def irc(argv, game, auth):
     print("Connecting to IRC... ({})".format(argv))
 
     irc_process = IRC(config, game, auth)
-    irc_process.set_thread_lock(irc_thread_lock)
 
     irc_process.run()
 

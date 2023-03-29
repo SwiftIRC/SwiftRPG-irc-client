@@ -6,7 +6,6 @@ import asyncio
 
 
 class IRC(irc.bot.SingleServerIRCBot):
-    thread_lock = None
     running = True
 
     config = None
@@ -28,9 +27,6 @@ class IRC(irc.bot.SingleServerIRCBot):
         self.game.set_irc_privmsg(self.privmsg)
         self.auth = auth
 
-    def set_thread_lock(self, lock):
-        self.thread_lock = lock
-
     def close(self):
         self.running = False
         self.connection.quit("Adios!")
@@ -50,79 +46,77 @@ class IRC(irc.bot.SingleServerIRCBot):
 
     def on_pubmsg(self, connection, event):
         if (event.target in self.config['CHANNELS']):
-            with self.thread_lock:
-                message = event.arguments[0].strip()
-                print("[IRC] [{}] ({}) {}".format(
-                    event.target, event.source.nick, message))
-                if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
-                    if message[1:] == "help":
-                        self.privmsg(event.source.nick,
-                                     "{}/help".format(self.config['API_HOSTNAME']))
-                        return
-                    elif not self.auth.check(event.source.nick):
-                        self.privmsg(event.source.nick,
-                                     "You are not logged in.")
-                        return
-                    print('[IRC] [{}] CMD DETECTED: ({}) {}'.format(
-                        event.target, event.source.nick, message))
-                    loop = asyncio.new_event_loop()
-                    try:
-                        loop.run_until_complete(self.game.command(
-                            self.auth, self.privmsg, event.target, event.source.nick, message))
-                    finally:
-                        loop.close()
-
-    def on_privmsg(self, connection, event):
-        with self.thread_lock:
             message = event.arguments[0].strip()
-            split = message.split()
-
             print("[IRC] [{}] ({}) {}".format(
                 event.target, event.source.nick, message))
-
             if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
-                if split[0][1:] == "login":
-                    if len(split) != 3:
-                        self.privmsg(
-                            event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
-                        return
-                    if self.auth.login(event.source.nick, split[1], split[2]):
-                        self.privmsg(event.source.nick, "Login successful!")
-                    else:
-                        # actual auth pls
-                        self.privmsg(event.source.nick, "Login failed!")
-                elif split[0][1:] == "register":
-                    if len(split) != 3:
-                        self.privmsg(
-                            event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
-                        return
-                    if self.auth.check(event.source.nick):
-                        self.privmsg(event.source.nick,
-                                     "You are already logged in.")
-                    elif self.auth.register(split[1], split[2]):
-                        self.privmsg(event.source.nick,
-                                     "Registration successful! Now you may log in.")
-                    else:
-                        # actual auth pls
-                        self.privmsg(
-                            event.source.nick, "Registration failed! Common failures: username already exists, password too short.")
-                elif split[0][1:] == "logout":
-                    if self.auth.check(event.source.nick):
-                        self.auth.logout(event.source.nick)
-                        self.privmsg(event.source.nick, "Logout successful!")
-                    else:
-                        self.privmsg(event.source.nick,
-                                     "You are not logged in.")
-                elif split[0][1:] == "loggedin":
-                    if self.auth.check(event.source.nick):
-                        self.privmsg(event.source.nick,
-                                     "Successfully logged in!")
-                    else:
-                        self.privmsg(event.source.nick,
-                                     "Not currently logged in.")
-                elif split[0][1:] == "help":
+                if message[1:] == "help":
                     self.privmsg(event.source.nick,
                                  "{}/help".format(self.config['API_HOSTNAME']))
+                    return
+                elif not self.auth.check(event.source.nick):
+                    self.privmsg(event.source.nick,
+                                 "You are not logged in.")
+                    return
+                print('[IRC] [{}] CMD DETECTED: ({}) {}'.format(
+                    event.target, event.source.nick, message))
+                loop = asyncio.new_event_loop()
+                try:
+                    loop.run_until_complete(self.game.command(
+                        self.auth, self.privmsg, event.target, event.source.nick, message))
+                finally:
+                    loop.close()
+
+    def on_privmsg(self, connection, event):
+        message = event.arguments[0].strip()
+        split = message.split()
+
+        print("[IRC] [{}] ({}) {}".format(
+            event.target, event.source.nick, message))
+
+        if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
+            if split[0][1:] == "login":
+                if len(split) != 3:
+                    self.privmsg(
+                        event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
+                    return
+                if self.auth.login(event.source.nick, split[1], split[2]):
+                    self.privmsg(event.source.nick, "Login successful!")
+                else:
+                    # actual auth pls
+                    self.privmsg(event.source.nick, "Login failed!")
+            elif split[0][1:] == "register":
+                if len(split) != 3:
+                    self.privmsg(
+                        event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
+                    return
+                if self.auth.check(event.source.nick):
+                    self.privmsg(event.source.nick,
+                                 "You are already logged in.")
+                elif self.auth.register(split[1], split[2]):
+                    self.privmsg(event.source.nick,
+                                 "Registration successful! Now you may log in.")
+                else:
+                    # actual auth pls
+                    self.privmsg(
+                        event.source.nick, "Registration failed! Common failures: username already exists, password too short.")
+            elif split[0][1:] == "logout":
+                if self.auth.check(event.source.nick):
+                    self.auth.logout(event.source.nick)
+                    self.privmsg(event.source.nick, "Logout successful!")
+                else:
+                    self.privmsg(event.source.nick,
+                                 "You are not logged in.")
+            elif split[0][1:] == "loggedin":
+                if self.auth.check(event.source.nick):
+                    self.privmsg(event.source.nick,
+                                 "Successfully logged in!")
+                else:
+                    self.privmsg(event.source.nick,
+                                 "Not currently logged in.")
+            elif split[0][1:] == "help":
+                self.privmsg(event.source.nick,
+                             "{}/help".format(self.config['API_HOSTNAME']))
 
     def on_nick(self, nick, event):
         old_name = event.source.nick
@@ -146,5 +140,4 @@ class IRC(irc.bot.SingleServerIRCBot):
         if self.running:
             self.running = False
             ircd = IRC({"irc": self.config})
-            ircd.set_thread_lock(self.thread_lock)
             ircd.run()
