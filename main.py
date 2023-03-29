@@ -10,6 +10,7 @@ import threading
 from auth import *
 from ircd import *
 from game import *
+from webhook import *
 from dotenv import load_dotenv
 
 print("Loading SwiftRPG...")
@@ -21,12 +22,14 @@ game_thread_lock = threading.Lock()
 
 config = {
     'NICK': os.getenv('NICK'),
-    'SERVER': os.getenv('SERVER'),
+    'IRC_SERVER': os.getenv('IRC_SERVER'),
     'PORT': int(os.getenv('PORT')),
     'CHANNELS': json.loads(os.getenv('CHANNELS')),
     'API_HOSTNAME': os.getenv('API_HOSTNAME'),
     'CERTIFICATE_PATH': os.getenv('CERTIFICATE_PATH'),
     'PRIVATE_KEY_PATH': os.getenv('PRIVATE_KEY_PATH'),
+    'WEBHOOK_HOST': os.getenv('WEBHOOK_HOST'),
+    'WEBHOOK_PORT': int(os.getenv('WEBHOOK_PORT')),
 }
 
 
@@ -66,8 +69,8 @@ def game_thread():
     return gaming_thread, game
 
 
-def irc_thread():
-    irc = IRC(config)
+def irc_thread(config, game, auth):
+    irc = IRC(config, game, auth)
     irc_thread = threading.Thread(target=irc.start)
     irc_thread.daemon = True
     irc_thread.start()
@@ -78,7 +81,10 @@ def main(argv):
     auth = Auth()
     gaming_thread, game = game_thread()
 
-    irc_thread, irc = irc(argv, game, auth)
+    ircd_thread, irc = irc_thread(config, game, auth)
+
+    webhook_server = WebhookServer(config, game)
+    webhook_server.run()
 
 
 def handler(signum, frame):

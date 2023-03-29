@@ -18,7 +18,7 @@ class IRC(irc.bot.SingleServerIRCBot):
     def __init__(self, config, game, auth):
         irc.client.ServerConnection.buffer_class.encoding = "latin-1"
         irc.bot.SingleServerIRCBot.__init__(self, [
-            (config["SERVER"],
+            (config["IRC_SERVER"],
              config["PORT"])],
             config["NICK"],
             "SwiftRPG")
