@@ -10,7 +10,7 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
                'X-Bot-Token': os.getenv('API_TOKEN')}
 
     try:
-        response = requests.post("{}/api/{}".format(os.getenv('HOSTNAME'), endpoint),
+        response = requests.post("{}/api/{}".format(os.getenv('API_HOSTNAME'), endpoint),
                                  data=data,
                                  verify=self.ssl_verify,
                                  headers=headers,
@@ -48,7 +48,7 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
                'X-Bot-Token': os.getenv('API_TOKEN')}
 
     try:
-        response = requests.get("{}/api/{}".format(os.getenv('HOSTNAME'), endpoint),
+        response = requests.get("{}/api/{}".format(os.getenv('API_HOSTNAME'), endpoint),
                                 verify=self.ssl_verify,
                                 headers=headers,
                                 allow_redirects=False)

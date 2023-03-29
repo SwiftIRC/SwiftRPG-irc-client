@@ -63,7 +63,7 @@ class Auth:
     def login(self, nick: string, username: string, password: string):
         headers = {'X-Bot-Token': os.getenv('API_TOKEN')}
 
-        response = requests.post("{}/api/auth".format(os.getenv('HOSTNAME')),
+        response = requests.post("{}/api/auth".format(os.getenv('API_HOSTNAME')),
                                  data={'name': username,
                                        'password': password},
                                  verify=self.ssl_verify,
@@ -83,7 +83,7 @@ class Auth:
     def register(self, username: string, password: string):
         headers = {'X-Bot-Token': os.getenv('API_TOKEN')}
 
-        response = requests.post("{}/api/auth/register".format(os.getenv('HOSTNAME')),
+        response = requests.post("{}/api/auth/register".format(os.getenv('API_HOSTNAME')),
                                  data={'name': username,
                                        'password': password,
                                        'password_confirmation': password},

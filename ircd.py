@@ -57,7 +57,7 @@ class IRC(irc.bot.SingleServerIRCBot):
                 if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
                     if message[1:] == "help":
                         self.privmsg(event.source.nick,
-                                     "{}/help".format(self.config['HOSTNAME']))
+                                     "{}/help".format(self.config['API_HOSTNAME']))
                         return
                     elif not self.auth.check(event.source.nick):
                         self.privmsg(event.source.nick,
@@ -122,7 +122,7 @@ class IRC(irc.bot.SingleServerIRCBot):
                                      "Not currently logged in.")
                 elif split[0][1:] == "help":
                     self.privmsg(event.source.nick,
-                                 "{}/help".format(self.config['HOSTNAME']))
+                                 "{}/help".format(self.config['API_HOSTNAME']))
 
     def on_nick(self, nick, event):
         old_name = event.source.nick

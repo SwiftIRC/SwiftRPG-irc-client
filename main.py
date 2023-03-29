@@ -24,7 +24,9 @@ config = {
     'SERVER': os.getenv('SERVER'),
     'PORT': int(os.getenv('PORT')),
     'CHANNELS': json.loads(os.getenv('CHANNELS')),
-    'HOSTNAME': os.getenv('HOSTNAME'),
+    'API_HOSTNAME': os.getenv('API_HOSTNAME'),
+    'CERTIFICATE_PATH': os.getenv('CERTIFICATE_PATH'),
+    'PRIVATE_KEY_PATH': os.getenv('PRIVATE_KEY_PATH'),
 }
 
 
@@ -64,11 +66,19 @@ def game_thread():
     return gaming_thread, game
 
 
+def irc_thread():
+    irc = IRC(config)
+    irc_thread = threading.Thread(target=irc.start)
+    irc_thread.daemon = True
+    irc_thread.start()
+    return irc_thread, irc
+
+
 def main(argv):
     auth = Auth()
     gaming_thread, game = game_thread()
 
-    irc(argv, game, auth)
+    irc_thread, irc = irc(argv, game, auth)
 
 
 def handler(signum, frame):

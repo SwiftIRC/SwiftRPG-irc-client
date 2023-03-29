@@ -52,7 +52,7 @@ class Game:
     #     if message[1:] == 'foo':
     #         await self.process_response(command, target, "What's up, {}?".format(author))
     #     elif message[1:] == 'help':
-    #         await self.process_private_response(command, author, "{}/help".format(os.getenv('HOSTNAME')))
+    #         await self.process_private_response(command, author, "{}/help".format(os.getenv('API_HOSTNAME')))
     #     elif split[0][1:] == 'xp' or split[0][1:] == 'exp':
     #         if len(split) != 2:
     #             await self.process_response(command, target, "Usage: {} <level>".format(split[0]))
