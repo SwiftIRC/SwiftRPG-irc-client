@@ -6,6 +6,8 @@ import os
 import signal
 import sys
 import threading
+import urllib3
+
 
 from auth import *
 from ircd import *
@@ -27,7 +29,13 @@ config = {
     'PRIVATE_KEY_PATH': os.getenv('PRIVATE_KEY_PATH'),
     'WEBHOOK_HOST': os.getenv('WEBHOOK_HOST'),
     'WEBHOOK_PORT': int(os.getenv('WEBHOOK_PORT')),
+    'SSL_VERIFY': bool(int(os.getenv('SSL_VERIFY'))),
+    'API_TOKEN': os.getenv('API_TOKEN'),
+    'CLIENT_ID': os.getenv('CLIENT_ID'),
 }
+
+if not config['SSL_VERIFY']:
+    urllib3.disable_warnings()
 
 
 def irc(argv, game, auth):
@@ -79,7 +87,7 @@ def main(argv):
 
     ircd_thread, irc = irc_thread(config, game, auth)
 
-    webhook_server = WebhookServer(config, game)
+    webhook_server = WebhookServer(config, game, irc)
     webhook_server.run()
 
 

@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
 
+import asyncio
 import http.server
 import os
+import requests
 import ssl
+import time
+import threading
+
+import API.api as api
 
 
 class WebhookServer:
-    irc = None
     config = {}
+    irc = None
+    game = None
 
-    def __init__(self, configuration, ircd):
-        self.config = configuration
-        self.irc = ircd
+    def __init__(self, config, game, irc):
+        self.config = config
+        self.irc = irc
+        self.game = game
 
     def run(self):
         # Set up the SSL context
@@ -28,7 +36,11 @@ class WebhookServer:
                 self.config['WEBHOOK_PORT']
             ),
             lambda *args, **kwargs: CustomRequestHandler(
-                *args, ircd=self.irc, configuration=self.config, **kwargs)
+                *args,
+                ircd=self.irc,
+                configuration=self.config,
+                **kwargs
+            )
         )
         httpd.socket = ssl_context.wrap_socket(httpd.socket, server_side=True)
 
@@ -36,7 +48,33 @@ class WebhookServer:
         print(
             f"WebhookServer started on https://0.0.0.0:{self.config['WEBHOOK_PORT']}"
         )
-        httpd.serve_forever()
+
+        http_thread, httpd = self.start_http_thread(httpd)
+
+        while True:
+            result = asyncio.run(self.register())
+            print('Client Registration Loop: ', result)
+            time.sleep(300)
+
+    def start_http_thread(self, httpd):
+        http_thread = threading.Thread(target=httpd.serve_forever)
+        http_thread.daemon = True
+        http_thread.start()
+        return http_thread, httpd
+
+    # Posts to the server to register/update the client
+    async def register(self):
+        return await api.post(
+            self.game,
+            self.irc.privmsg,
+            self.config['NICK'],
+            self.config['API_TOKEN'],
+            'client/register',
+            {
+                'client-id': self.config['CLIENT_ID'],
+                'webhook_port': self.config['WEBHOOK_PORT'],
+            }
+        )
 
 
 class CustomRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -69,4 +107,4 @@ class CustomRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
 
                 for channel in self.config['CHANNELS']:
-                    self.irc.irc_privmsg(channel, data.decode())
+                    self.irc.privmsg(channel, data.decode())
