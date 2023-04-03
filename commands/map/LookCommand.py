@@ -2,6 +2,7 @@
 
 from types import FunctionType
 import API.api as api
+import common
 import string
 
 
@@ -26,7 +27,7 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
             return "[{}] 👀 Looking around [{}, {}]. {} Buildings: {} - People: {} - Trees: {} - Roads: {}".format(character, response['x'], response['y'], response['terrain'][0]['description'], len(response['buildings']), len(response['npcs']), response['available_trees'], edge_str)
         return "[{}] 👀 Something went wrong.".format(character)
     elif len(split) >= 2:
-        if split[1] in ['person', 'people', 'npcs', 'npc']:
+        if split[1] in ['list']:
             returned = await api.get(game, command, target, token, 'map/user/look/npcs')
 
             if returned:
@@ -46,21 +47,7 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                             await game.process_response(command, target, "[{}] 👀 Looking at Person: {} {} | {} | {}".format(
                                 character, npc['first_name'], npc['last_name'], npc['occupation']['name'], npc['occupation']['description']))
 
-                            skills = [
-                                'thieving',
-                                'fishing',
-                                'mining',
-                                'woodcutting',
-                                'firemaking',
-                                'cooking',
-                                'smithing',
-                                'fletching',
-                                'crafting',
-                                'herblore',
-                                'agility',
-                                'farming',
-                                'hunter',
-                            ]
+                            skills = common.lib.skills
 
                             stats = [
                                 "{} {} ({}xp)".format(
@@ -104,3 +91,5 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                         return "[{}] 👀 {}".format(character, response.get('error', 'Something went wrong'))
         else:
             return "[{}] 👀 Command not found.".format(character)
+    else:
+        return "[{}] 👀 Command not found.".format(character)
