@@ -25,9 +25,9 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                 edge_str = ' '.join(edge_split)
 
             return "[{}] 👀 Looking around [{}, {}]. {} Buildings: {} - People: {} - Trees: {} - Roads: {}".format(character, response['x'], response['y'], response['terrain'][0]['description'], len(response['buildings']), len(response['npcs']), response['available_trees'], edge_str)
-        return "[{}] 👀 Something went wrong.".format(character)
+        # return "[{}] 👀 Something went wrong.".format(character)
     elif len(split) >= 2:
-        if split[1] in ['list']:
+        if split[1] in ['person', 'people', 'npcs', 'npc']:
             returned = await api.get(game, command, target, token, 'map/user/look/npcs')
 
             if returned:

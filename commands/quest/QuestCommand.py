@@ -36,6 +36,15 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
 
             if quest:
                 print(quest)
+                if quest['incompleteDependencies'] > 0:
+                    incompleteSteps = [str(step['id'])
+                                       for step in quest.get('incompleteSteps', [])]
+                    plural = 's' if quest['incompleteDependencies'] > 1 else ''
+                    return "[{}] 🗺️ Quests: Quest dependencies not met | {} step{}".format(
+                        character,
+                        str(quest['incompleteDependencies']),
+                        plural
+                    )
                 rewards = {
                     reward: quest[reward]
                     for reward in quest
@@ -84,8 +93,6 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                 ))
                 return "[{}] 🗺️ Quests: {}".format(character, ', '.join(quests))
             return "[{}] 🗺️ Quests: something went wrong".format(character)
-        else:
-            return "[{}] 🗺️ Command not found.".format(character)
 
 
 '''
