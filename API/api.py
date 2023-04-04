@@ -36,12 +36,12 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
             return response.json()
         except json.decoder.JSONDecodeError:
             print("ERROR: api.py [01]: ", response.text)
-            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [02]')))
+            await self.process_response(command, target, "Error: {} [02]".format(response.text))
         except Exception as e:
-            print("ERROR: api.py [02]: ", e)
-            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [03]')))
+            print("ERROR: api.py [03]: ", e)
+            await self.process_response(command, target, "Error: {} [04]".format(response.text))
     else:
-        print("ERROR: api.py [03]: ",
+        print("ERROR: api.py [05]: ",
               response.status_code, response.text)
 
 
@@ -74,11 +74,11 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
         try:
             return response.json()
         except json.decoder.JSONDecodeError:
-            print("ERROR: api.py [04]: ", response.text)
-            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [04]')))
+            print("ERROR: api.py [06]: ", response.text)
+            await self.process_response(command, target, "Error: {} [07]".format(response.text))
         except Exception as e:
-            print("ERROR: api.py [05]: ", e)
-            await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown [05]')))
+            print("ERROR: api.py [08]: ", e)
+            await self.process_response(command, target, "Error: {} [09]".format(response.text))
     else:
-        print("ERROR: api.py [06]: ",
+        print("ERROR: api.py [10]: ",
               response.status_code, response.text)
