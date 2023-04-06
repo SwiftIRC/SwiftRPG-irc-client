@@ -44,13 +44,20 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                     elif len(split) == 3 and split[2].isdigit():
                         if int(split[2]) - 1 <= len(response):
                             npc = response[int(split[2]) - 1]
-                            await game.process_response(command, target, "[{}] 👀 Looking at Person: {} {} | {} | {}".format(
-                                character, npc['first_name'], npc['last_name'], npc['occupation']['name'], npc['occupation']['description']))
+                            await game.process_response(command, target, "[{}] 👀 Looking at Person: {} {} | {} | {} | {} | {}".format(
+                                character,
+                                npc['first_name'],
+                                npc['last_name'],
+                                npc['gender'].title(),
+                                npc['species'].title(),
+                                npc['occupation']['name'],
+                                npc['occupation']['description']
+                            ))
 
                             skills = common.lib.skills
 
                             stats = [
-                                "{} {} ({}xp)".format(
+                                "{} {} ({:,}xp)".format(
                                     skill.title(),
                                     await game.level(npc[skill]),
                                     npc[skill]

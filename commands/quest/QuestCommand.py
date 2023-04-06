@@ -32,11 +32,12 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                 return "[{}] 🗺️ Syntax: !quest start [Quest ID] (Step ID)".format(character)
             path = 'quests/start/{}/{}'.format(
                 split[2], '' if len(split) < 4 else split[3])
-            quest = await api.get(game, command, target, token, path)
+            response = await api.get(game, command, target, token, path)
 
-            if quest:
+            if response:
+                quest = response['meta']['response']
                 print(quest)
-                if quest['incompleteDependencies'] > 0:
+                if quest.get('incompleteDependencies', 0) > 0:
                     incompleteSteps = [str(step['id'])
                                        for step in quest.get('incompleteSteps', [])]
                     plural = 's' if quest['incompleteDependencies'] > 1 else ''
@@ -65,10 +66,11 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                 return "[{}] 🗺️ Syntax: !quest inspect [Quest ID]".format(character)
             path = 'quests/inspect/{}'.format(
                 split[2], '' if len(split) < 4 else split[3])
-            quest = await api.get(game, command, target, token, path)
+            response = await api.get(game, command, target, token, path)
 
-            if quest:
-                print(quest)
+            if response:
+                quest = response['meta']['response']
+
                 rewards = {
                     reward: quest[reward]
                     for reward in quest
@@ -92,68 +94,3 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                     )
                 ))
                 return "[{}] 🗺️ Quests: {}".format(character, ', '.join(quests))
-            return "[{}] 🗺️ Quests: something went wrong".format(character)
-
-
-'''
-{
-"id": 1,
-"name": "Teacher's Pet",
-"description": "Use `.quest start 1` to start this quest.",
-"gp": "0",
-"thieving": 0,
-"fishing": 0,
-"mining": 0,
-"woodcutting": 50,
-"firemaking": 0,
-"cooking": 0,
-"smithing": 0,
-"fletching": 0,
-"crafting": 0,
-"herblore": 0,
-"agility": 0,
-"farming": 0,
-"hunter": 0,
-"step": {
-"id": 3,
-"quest_id": 1,
-"output": "You report your progress back to the teacher and... Congratulations! You have completed the first quest. In one (1) tick you will receive your reward.",
-"ticks": 1
-},
-"requested_step_id": 3,
-"incompleteDependencies": 1,
-"incompleteSteps": [
-{
-"id": 2,
-"quest_id": 1,
-"output": "Your teacher has asked you to collect 1 apple. Use `.quest inspect 1` to view progress.",
-"ticks": 5
-},
-{
-"id": 3,
-"quest_id": 1,
-"output": "You report your progress back to the teacher and... Congratulations! You have completed the first quest. In one (1) tick you will receive your reward.",
-"ticks": 1
-}
-],
-"dependencies": [
-{
-"id": 2,
-"quest_id": 1,
-"quest_step_id": 2,
-"quest_step_dependency_id": 2,
-"output": "Your teacher has asked you to collect 1 apple. Use `.quest inspect 1` to view progress.",
-"ticks": 5
-}
-],
-"completeStep": null,
-"completeSteps": [
-{
-"id": 1,
-"user_id": 1,
-"quest_id": 1,
-"quest_step_id": 1
-}
-]
-}
-'''
