@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import irc.bot
-import re
+import os
 import asyncio
 
 
@@ -51,12 +51,40 @@ class IRC(irc.bot.SingleServerIRCBot):
     def on_pubmsg(self, connection, event):
         if (event.target in self.config['CHANNELS']):
             message = event.arguments[0].strip()
+            split = message.split()
             print("[IRC] [{}] ({}) {}".format(
                 event.target, event.source.nick, message))
             if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
-                if message[1:] == "help":
+                if split[0][1:] == "help":
                     self.privmsg(event.source.nick,
                                  "{}/help".format(self.config['API_HOSTNAME']))
+                    return
+                elif split[0][1:] == "login":
+                    if len(split) != 2:
+                        self.privmsg(
+                            event.source.nick, "Syntax: {} <token from {}/user>".format(
+                                split[0],
+                                os.getenv('API_HOSTNAME')
+                            )
+                        )
+                        return
+
+                    response = self.auth.login(event.source.nick, split[1])
+
+                    if response and 'name' in response:
+                        self.privmsg(
+                            event.target,
+                            "[{}] 🔑 Successfully logged in".format(
+                                response.get('name'),
+                            )
+                        )
+                    else:
+                        self.privmsg(
+                            event.target,
+                            "[{}] 🔑 Error: invalid token".format(
+                                event.source.nick
+                            )
+                        )
                     return
                 elif not self.auth.check(event.source.nick):
                     self.privmsg(event.source.nick,
@@ -71,56 +99,56 @@ class IRC(irc.bot.SingleServerIRCBot):
                 finally:
                     loop.close()
 
-    def on_privmsg(self, connection, event):
-        message = event.arguments[0].strip()
-        split = message.split()
+    # def on_privmsg(self, connection, event):
+    #     message = event.arguments[0].strip()
+    #     split = message.split()
 
-        print("[IRC] [{}] ({}) {}".format(
-            event.target, event.source.nick, message))
+    #     print("[IRC] [{}] ({}) {}".format(
+    #         event.target, event.source.nick, message))
 
-        if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
-            if split[0][1:] == "login":
-                if len(split) != 3:
-                    self.privmsg(
-                        event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
-                    return
-                if self.auth.login(event.source.nick, split[1], split[2]):
-                    self.privmsg(event.source.nick, "Login successful!")
-                else:
-                    # actual auth pls
-                    self.privmsg(event.source.nick, "Login failed!")
-            elif split[0][1:] == "register":
-                if len(split) != 3:
-                    self.privmsg(
-                        event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
-                    return
-                if self.auth.check(event.source.nick):
-                    self.privmsg(event.source.nick,
-                                 "You are already logged in.")
-                elif self.auth.register(split[1], split[2]):
-                    self.privmsg(event.source.nick,
-                                 "Registration successful! Now you may log in.")
-                else:
-                    # actual auth pls
-                    self.privmsg(
-                        event.source.nick, "Registration failed! Common failures: username already exists, password too short.")
-            elif split[0][1:] == "logout":
-                if self.auth.check(event.source.nick):
-                    self.auth.logout(event.source.nick)
-                    self.privmsg(event.source.nick, "Logout successful!")
-                else:
-                    self.privmsg(event.source.nick,
-                                 "You are not logged in.")
-            elif split[0][1:] == "loggedin":
-                if self.auth.check(event.source.nick):
-                    self.privmsg(event.source.nick,
-                                 "Successfully logged in!")
-                else:
-                    self.privmsg(event.source.nick,
-                                 "Not currently logged in.")
-            elif split[0][1:] == "help":
-                self.privmsg(event.source.nick,
-                             "{}/help".format(self.config['API_HOSTNAME']))
+    #     if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
+    #         if split[0][1:] == "login":
+    #             if len(split) != 3:
+    #                 self.privmsg(
+    #                     event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
+    #                 return
+    #             if self.auth.login(event.source.nick, split[1], split[2]):
+    #                 self.privmsg(event.source.nick, "Login successful!")
+    #             else:
+    #                 # actual auth pls
+    #                 self.privmsg(event.source.nick, "Login failed!")
+    #         elif split[0][1:] == "register":
+    #             if len(split) != 3:
+    #                 self.privmsg(
+    #                     event.source.nick, "Syntax: {} <username> <password>".format(split[0]))
+    #                 return
+    #             if self.auth.check(event.source.nick):
+    #                 self.privmsg(event.source.nick,
+    #                              "You are already logged in.")
+    #             elif self.auth.register(split[1], split[2]):
+    #                 self.privmsg(event.source.nick,
+    #                              "Registration successful! Now you may log in.")
+    #             else:
+    #                 # actual auth pls
+    #                 self.privmsg(
+    #                     event.source.nick, "Registration failed! Common failures: username already exists, password too short.")
+    #         elif split[0][1:] == "logout":
+    #             if self.auth.check(event.source.nick):
+    #                 self.auth.logout(event.source.nick)
+    #                 self.privmsg(event.source.nick, "Logout successful!")
+    #             else:
+    #                 self.privmsg(event.source.nick,
+    #                              "You are not logged in.")
+    #         elif split[0][1:] == "loggedin":
+    #             if self.auth.check(event.source.nick):
+    #                 self.privmsg(event.source.nick,
+    #                              "Successfully logged in!")
+    #             else:
+    #                 self.privmsg(event.source.nick,
+    #                              "Not currently logged in.")
+    #         elif split[0][1:] == "help":
+    #             self.privmsg(event.source.nick,
+    #                          "{}/help".format(self.config['API_HOSTNAME']))
 
     def on_nick(self, nick, event):
         old_name = event.source.nick

@@ -2,13 +2,12 @@ import commands.woodcutting.ChopCommand as command_chop
 import commands.firemaking.BurnCommand as command_burn
 import commands.thieving.PickpocketCommand as command_pickpocket
 import commands.stats.StatsCommand as command_stats
-import commands.stats.XpCommand as command_xp
-import commands.stats.LvlCommand as command_lvl
-
+import commands.quest.QuestCommand as command_quest
 import commands.map.ExploreCommand as command_explore
 import commands.map.LookCommand as command_look
 
-import commands.quest.QuestCommand as command_quest
+import commands.stats.XpCommand as command_xp
+import commands.stats.LvlCommand as command_lvl
 
 
 class CommandController:
