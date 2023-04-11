@@ -35,7 +35,7 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
             response = await api.get(game, command, target, token, path)
 
             if response:
-                quest = response['meta']['response']
+                quest = response['metadata']['response']
                 print(quest)
                 if quest.get('incompleteDependencies', 0) > 0:
                     incompleteSteps = [str(step['id'])
@@ -60,16 +60,14 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                         'completeStep', None) != None else ''
                 )
                 return "[{}] 🗺️ Quests: {}".format(character, quests)
-            return "[{}] 🗺️ Quests: something went wrong".format(character)
         elif split[1] == 'inspect':
             if len(split) < 3:
                 return "[{}] 🗺️ Syntax: !quest inspect [Quest ID]".format(character)
-            path = 'quests/inspect/{}'.format(
-                split[2], '' if len(split) < 4 else split[3])
+            path = 'quests/inspect/{}'.format(split[2])
             response = await api.get(game, command, target, token, path)
 
             if response:
-                quest = response['meta']['response']
+                quest = response['metadata']['response']
 
                 rewards = {
                     reward: quest[reward]

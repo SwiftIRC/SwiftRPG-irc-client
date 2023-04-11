@@ -13,10 +13,22 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
         returned = await api.post(game, command, target, token, 'map/user/explore', {'direction': split[1]})
 
         if returned:
-            response = returned.get('meta', {}).get('response', None)
+            response = returned.get('metadata', {})
 
             if response:
                 if 'discovered_by' in response:
-                    return "[{}] 🏃 Exploring to [{},{}], {}".format(character, response['x'], response['y'], response['terrain']['description'].lower())
+                    return "[{}] 🏃 Exploring {} to [{},{}], {} {}".format(
+                        character,
+                        response['direction'],
+                        response['x'],
+                        response['y'],
+                        response['terrain']['description'].lower(),
+                        'Undiscovered.' if response['discovered_at'] == None else
+                        'Discovered by {} ({}).'.format(
+                            response['discovered_by']['name'],
+                            response['discovered_at']
+                        ) if response['discovered_by']['name'].lower() != character.lower()
+                        else 'You discovered this area ({}).'.format(response['discovered_at'])
+                    )
                 elif 'error' in response:
                     return "[{}] 🏃 {}".format(character, response['error'])

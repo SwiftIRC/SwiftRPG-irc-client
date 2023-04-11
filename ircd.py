@@ -41,6 +41,10 @@ class IRC(irc.bot.SingleServerIRCBot):
     def on_welcome(self, connection, event):
         self.connection = connection
 
+        if len(self.config['PASSWORD']):
+            self.connection.privmsg("NickServ", "IDENTIFY {}".format(
+                self.config['PASSWORD']))
+
         connection.join(
             ','.join([channel for channel in self.config['CHANNELS']]))
 

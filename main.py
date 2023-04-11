@@ -21,6 +21,7 @@ load_dotenv()
 
 config = {
     'NICK': os.getenv('NICK'),
+    'PASSWORD': os.getenv('PASSWORD'),
     'IRC_SERVER': os.getenv('IRC_SERVER'),
     'PORT': int(os.getenv('PORT')),
     'CHANNELS': json.loads(os.getenv('CHANNELS')),
