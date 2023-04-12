@@ -6,8 +6,11 @@ import string
 
 
 async def post(self, command: FunctionType, target, token: string, endpoint: string, data={}):
-    headers = {'Authorization': 'Bearer {}'.format(token),
-               'X-Bot-Token': os.getenv('API_TOKEN')}
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer {}'.format(token),
+        'X-Bot-Token': os.getenv('API_TOKEN'),
+    }
 
     try:
         response = requests.post("{}/api/{}".format(os.getenv('API_HOSTNAME'), endpoint),
@@ -25,8 +28,8 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
         await self.process_response(command, target, "Error: {}".format(e))
         return
 
-    if response.status_code == 302:
-        await self.process_response(command, target, "Error: user session expired. Please PM the bot `.login <username> <password>`.")
+    if response.status_code in [302, 401]:
+        await self.process_response(command, target, "Error: user session expired. Please `.login` again.")
     elif response.status_code == 403:
         await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
     elif response.status_code == 404:
@@ -46,8 +49,11 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
 
 
 async def get(self, command: FunctionType, target, token: string, endpoint: string):
-    headers = {'Authorization': 'Bearer {}'.format(token),
-               'X-Bot-Token': os.getenv('API_TOKEN')}
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer {}'.format(token),
+        'X-Bot-Token': os.getenv('API_TOKEN')
+    }
 
     try:
         response = requests.get("{}/api/{}".format(os.getenv('API_HOSTNAME'), endpoint),
@@ -64,7 +70,7 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
         await self.process_response(command, target, "Error: {}".format(e))
         return
 
-    if response.status_code == 302:
+    if response.status_code in [302, 401]:
         await self.process_response(command, target, "Error: user session expired. Please PM the bot `.login <username> <password>`.")
     elif response.status_code == 403:
         await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
