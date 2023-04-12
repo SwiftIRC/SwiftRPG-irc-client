@@ -28,10 +28,8 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
         await self.process_response(command, target, "Error: {}".format(e))
         return
 
-    if response.status_code in [302, 401]:
+    if response.status_code == 401:
         await self.process_response(command, target, "Error: user session expired. Please `.login` again.")
-    elif response.status_code == 403:
-        await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
     elif response.status_code == 404:
         await self.process_response(command, target, "Error: 404 resource not found!")
     elif response.status_code == 200:
@@ -70,10 +68,8 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
         await self.process_response(command, target, "Error: {}".format(e))
         return
 
-    if response.status_code in [302, 401]:
+    if response.status_code == 401:
         await self.process_response(command, target, "Error: user session expired. Please PM the bot `.login <username> <password>`.")
-    elif response.status_code == 403:
-        await self.process_response(command, target, "Error: {}".format(response.json().get('error', 'unknown')))
     elif response.status_code == 404:
         await self.process_response(command, target, "Error: 404 resource not found!")
     elif response.status_code == 200:
