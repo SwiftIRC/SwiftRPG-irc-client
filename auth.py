@@ -2,7 +2,6 @@
 
 import datetime
 import json
-import simplejson
 import os
 import requests
 import string
