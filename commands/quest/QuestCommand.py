@@ -11,12 +11,11 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
     split = message.split()
 
     if len(split) == 1:
-        return "[{}] 🗺️ Syntax: !quest list | !quest start [Quest ID] (Step ID) | !quest inspect [Quest ID]".format(character)
+        return "[{0}] 🗺️ Syntax: {1} list | {1} start [Quest ID] (Step ID) | {1} inspect [Quest ID]".format(character, split[0])
     elif len(split) >= 2:
         if split[1] == 'list':
             response = await api.get(game, command, target, token, 'quests')
 
-            print(response)
             if response:
                 quests = []
                 for index in response:
@@ -25,11 +24,11 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                         str(quest.id),
                         quest.name
                     ))
-                return "[{}] 🗺️ Quests: {}".format(character, ', '.join(quests))
-            return "[{}] 🗺️ Quests: None started".format(character)
+                return "[{}] 🗺️ Quests | {}".format(character, ', '.join(quests))
+            return "[{}] 🗺️ Quests | None started".format(character)
         elif split[1] == 'start':
             if len(split) < 3:
-                return "[{}] 🗺️ Syntax: !quest start [Quest ID] (Step ID)".format(character)
+                return "[{}] 🗺️ Syntax: {} start [Quest ID] (Step ID)".format(character, split[0])
             path = 'quests/start/{}/{}'.format(
                 split[2], '' if len(split) < 4 else split[3])
             response = await api.get(game, command, target, token, path)
@@ -62,7 +61,7 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                 return "[{}] 🗺️ Quests: {}".format(character, quests)
         elif split[1] == 'inspect':
             if len(split) < 3:
-                return "[{}] 🗺️ Syntax: !quest inspect [Quest ID]".format(character)
+                return "[{}] 🗺️ Syntax: {} inspect [Quest ID]".format(character, split[0])
             path = 'quests/inspect/{}'.format(split[2])
             response = await api.get(game, command, target, token, path)
 
