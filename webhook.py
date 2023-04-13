@@ -53,7 +53,8 @@ class WebhookServer:
 
         while True:
             result = asyncio.run(self.register())
-            print('Client Registration Loop: ', result)
+            if os.getenv('DEBUG'):
+                print('Client Registration Loop: ', result)
             time.sleep(300)
 
     def start_http_thread(self, httpd):
