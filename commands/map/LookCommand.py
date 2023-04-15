@@ -13,8 +13,9 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
         raw_response = await api.get(game, command, target, token, 'map/user/look')
 
         if raw_response:
-            metadata = raw_response.get('metadata', {})
-            response = metadata.get('response', {})
+            if 'error' in raw_response:
+                return "[{}] 👀 Error: {}".format(character, raw_response['error'])
+            response = raw_response.get('metadata', {})
             edges = []
             for edge in response['edges']:
                 if edge['pivot']['is_road']:
@@ -36,18 +37,17 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                 edge_str,
                 'Undiscovered.' if response['discovered_at'] == None else
                 'Discovered by {} ({}).'.format(
-                    metadata['discovered_by']['name'],
+                    response['discovered_by']['name'],
                     response['discovered_at']
-                ) if metadata['discovered_by']['name'].lower() != character.lower()
+                ) if response['discovered_by']['name'].lower() != character.lower()
                 else 'You discovered this area ({}).'.format(response['discovered_at'])
             )
-        # return "[{}] 👀 Something went wrong.".format(character)
     elif len(split) >= 2:
         if split[1] in ['person', 'people', 'npcs', 'npc']:
             returned = await api.get(game, command, target, token, 'map/user/look/npcs')
 
             if returned:
-                response = returned.get('metadata', {}).get('response', None)
+                response = returned.get('metadata', {})
                 print(response)
 
                 if len(response):
@@ -93,9 +93,9 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
             returned = await api.get(game, command, target, token, 'map/user/look/buildings')
 
             if returned:
-                response = returned.get('metadata', {}).get('response', None)
+                response = returned.get('metadata', {})
 
-                if response:
+                if len(response):
                     buildings = [str(building['id']) + ': ' + building['name']
                                  for building in response]
                     return "[{}] 👀 Looking around at buildings. {}".format(character, ', '.join(buildings))
@@ -105,7 +105,7 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
 
             returned = await api.get(game, command, target, token, 'map/user/look/' + direction)
             if returned:
-                response = returned.get('metadata', {}).get('response', None)
+                response = returned.get('metadata', None)
 
                 if response:
                     if 'x' in response:
@@ -117,13 +117,15 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                             response['terrain']['description'].lower(),
                             'Undiscovered.' if response['discovered_at'] == None else
                             'Discovered by {} ({}).'.format(
-                                metadata['discovered_by']['name'],
+                                response['discovered_by']['name'],
                                 response['discovered_at']
-                            ) if metadata['discovered_by']['name'].lower() != character.lower()
+                            ) if response['discovered_by']['name'].lower() != character.lower()
                             else 'You discovered this area ({}).'.format(response['discovered_at'])
                         )
                     else:
                         return "[{}] 👀 {}".format(character, response.get('error', 'Something went wrong'))
+                else:
+                    return "[{}] 👀 {}".format(character, response.get('error', 'Something went wrong'))
         else:
             return "[{}] 👀 Command not found.".format(character)
     else:

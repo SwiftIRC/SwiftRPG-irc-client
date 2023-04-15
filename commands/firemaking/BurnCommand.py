@@ -13,7 +13,8 @@ async def exec(game, command, target, author, message, character, token):
                 prefix,
                 await game.level(response.get('experience')),
                 response.get('experience'),
-                response.get('reward', {}).get('total', 0),
+                response.get('reward', {}).get(
+                    'loot', [{}])[0].get('total', 0),
                 response.get('seconds_until_tick', 0)
             )
         elif 'error' in response:
