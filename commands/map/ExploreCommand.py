@@ -32,3 +32,5 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                     )
                 elif 'error' in response:
                     return "[{}] 🏃 {}".format(character, response['error'])
+            elif 'error' in returned:
+                return "[{}] 🏃 {}".format(character, returned['error'])

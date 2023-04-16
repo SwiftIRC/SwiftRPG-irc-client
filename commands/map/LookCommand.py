@@ -30,7 +30,7 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                 character,
                 response['x'],
                 response['y'],
-                response['terrain'][0]['description'],
+                response['terrain']['description'],
                 len(response['buildings']),
                 len(response['npcs']),
                 response['available_trees'],
