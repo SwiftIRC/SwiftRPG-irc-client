@@ -10,6 +10,7 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
         'Accept': 'application/json',
         'Authorization': 'Bearer {}'.format(token),
         'X-Bot-Token': os.getenv('API_TOKEN'),
+        'X-Client-Id': os.getenv('CLIENT_ID'),
     }
 
     try:
@@ -52,7 +53,8 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
     headers = {
         'Accept': 'application/json',
         'Authorization': 'Bearer {}'.format(token),
-        'X-Bot-Token': os.getenv('API_TOKEN')
+        'X-Bot-Token': os.getenv('API_TOKEN'),
+        'X-Client-Id': os.getenv('CLIENT_ID'),
     }
 
     try:
