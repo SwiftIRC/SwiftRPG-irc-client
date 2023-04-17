@@ -32,7 +32,7 @@ class WebhookServer:
         # Create the HTTP server with SSL enabled
         httpd = http.server.HTTPServer(
             (
-                self.config['WEBHOOK_HOST'],
+                self.config['WEBHOOK_LISTEN'],
                 self.config['WEBHOOK_PORT']
             ),
             lambda *args, **kwargs: CustomRequestHandler(
@@ -46,7 +46,7 @@ class WebhookServer:
 
         # Start the server
         print(
-            f"WebhookServer started on https://0.0.0.0:{self.config['WEBHOOK_PORT']}"
+            f"WebhookServer started on https://{self.config['WEBHOOK_LISTEN']}:{self.config['WEBHOOK_PORT']}{self.config['WEBHOOK_PATH']}"
         )
 
         http_thread, httpd = self.start_http_thread(httpd)
@@ -63,16 +63,21 @@ class WebhookServer:
 
     # Posts to the server to register/update the client
     async def register(self):
+        data = {
+            'client-id': self.config['CLIENT_ID'],
+            'webhook_port': self.config['WEBHOOK_PORT'],
+            'webhook_path': self.config['WEBHOOK_PATH'],
+        }
+        if len(self.config['WEBHOOK_ADDRESS']) > 0:
+            data['webhook_address'] = self.config['WEBHOOK_ADDRESS']
+
         return await api.post(
             self.game,
             self.irc.privmsg,
             self.config['NICK'],
             self.config['API_TOKEN'],
             'client/register',
-            {
-                'client-id': self.config['CLIENT_ID'],
-                'webhook_port': self.config['WEBHOOK_PORT'],
-            }
+            data
         )
 
 
