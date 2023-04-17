@@ -2,6 +2,7 @@
 
 import asyncio
 import http.server
+import json
 import os
 import requests
 import ssl
@@ -99,7 +100,7 @@ class CustomRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_POST(self):
         print("Received a POST request from", self.client_address)
-        if self.path == '/global':
+        if self.path == self.config['WEBHOOK_PATH']:
             data = self.rfile.read(int(self.headers['Content-Length']))
             token = self.headers['X-Bot-Token']
             print("received: ", data.decode())
@@ -110,5 +111,14 @@ class CustomRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'Content-Type', 'application/json; charset=utf-8')
                 self.end_headers()
 
+                message = ''
+                json_data = json.loads(data.decode())
+
+                if 'command' in json_data:
+                    message = '{} has finished {}!'.format(
+                        json_data['user']['name'],
+                        json_data['command']['verb'],
+                    )
+
                 for channel in self.config['CHANNELS']:
-                    self.irc.privmsg(channel, data.decode())
+                    self.irc.privmsg(channel, message)
