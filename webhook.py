@@ -114,10 +114,29 @@ class CustomRequestHandler(http.server.SimpleHTTPRequestHandler):
                 message = ''
                 json_data = json.loads(data.decode())
 
-                if 'command' in json_data:
+                if json_data['type'] == 'command_complete':
                     message = '{} has finished {}!'.format(
-                        json_data['user']['name'],
-                        json_data['command']['verb'],
+                        json_data['data']['user']['name'],
+                        json_data['data']['command']['verb'],
+                    )
+                elif json_data['type'] == 'event':
+                    xp_rewards = [
+                        '{}: {}'.format(
+                            xp['name'].title(),
+                            xp['quantity'],
+                        )
+                        for xp in json_data['data']['reward']['experience']
+                    ]
+                    item_rewards = [
+                        '{}: {:,}'.format(
+                            loot['name'],
+                            loot['quantity'],
+                        )
+                        for loot in json_data['data']['reward']['loot']]
+                    message = '{} | Rewards: [ (loot) {} | (xp) {} ]'.format(
+                        json_data['data']['event']['description'],
+                        ', '.join(item_rewards),
+                        ', '.join(xp_rewards)
                     )
 
                 for channel in self.config['CHANNELS']:

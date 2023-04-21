@@ -36,7 +36,7 @@ async def post(self, command: FunctionType, target, token: string, endpoint: str
     elif response.status_code == 200:
         try:
             if os.getenv('DEBUG'):
-                print(response.json())
+                print(json.dumps(response.json(), sort_keys=True))
             return response.json()
         except json.decoder.JSONDecodeError:
             print("ERROR: api.py [01]: ", response.text)
@@ -79,7 +79,7 @@ async def get(self, command: FunctionType, target, token: string, endpoint: stri
     elif response.status_code == 200:
         try:
             if os.getenv('DEBUG'):
-                print(response.json())
+                print(json.dumps(response.json(), sort_keys=True))
             return response.json()
         except json.decoder.JSONDecodeError:
             print("ERROR: api.py [06]: ", response.text)

@@ -73,8 +73,8 @@ async def exec(game: FunctionType, command: string, target, author: string, mess
                             stats = [
                                 "{} {} ({:,}xp)".format(
                                     skill['name'].title(),
-                                    await game.level(skill['pivot']['value']),
-                                    skill['pivot']['value']
+                                    await game.level(skill['pivot']['quantity']),
+                                    skill['pivot']['quantity']
                                 )
                                 for skill in npc['skills']
                             ]
