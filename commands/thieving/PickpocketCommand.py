@@ -22,15 +22,29 @@ async def exec(game, command, target, author, message, character, token):
                 )
             )
         elif 'reward' in response and response['reward'] != None:
-            return "[{}] 🕵️ Pickpocketing: {} ({}xp) [+{}xp] | {}: {} [+{}] | {} seconds until completion".format(
+            xp_rewards = [
+                '{}: {} ({}xp) [+{}xp]'.format(
+                    reward.get('skill').get('name').title(),
+                    await game.level(reward.get('total', 0)),
+                    reward.get('total', 0),
+                    reward.get('quantity', 0),
+                )
+                for reward in response.get('reward', {}).get('experience')
+            ]
+            item_rewards = [
+                '{}: {} [+{}]'.format(
+                    loot.get('item').get('name'),
+                    loot.get('total', 0),
+                    loot.get('quantity', 0),
+                )
+                for loot in response.get('reward', {}).get('loot')
+            ]
+            rewards = ' | '.join(xp_rewards + item_rewards)
+            return "[{}] {} {} | {} {} seconds more of {}.".format(
                 character,
-                await game.level(response.get('reward').get('experience')[0].get('total', 0)),
-                response.get('reward', {}).get(
-                    'experience')[0].get('total', 0),
-                response.get('reward', {}).get(
-                    'experience')[0].get('quantity', 0),
-                response.get('reward', {}).get('loot')[0].get('name', ''),
-                response.get('reward', {}).get('loot')[0].get('total', 0),
-                response.get('reward', {}).get('loot')[0].get('quantity', 0),
-                response.get('seconds_until_tick', 0)
+                response.get('command').get('emoji'),
+                response.get('command').get('method').title(),
+                '' if len(rewards) == 0 else '{} |'.format(rewards),
+                response.get('seconds_until_tick', 0),
+                response.get('command').get('verb'),
             )
