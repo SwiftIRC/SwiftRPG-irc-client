@@ -3,10 +3,9 @@
 from types import FunctionType
 import API.api as api
 import os
+import string
 import time
 import controllers.CommandController as CommandController
-
-from auth import *
 
 
 class Game:
@@ -42,7 +41,7 @@ class Game:
     async def process_private_response(self, command, target, response):
         command(target, response)
 
-    async def command(self, auth: Auth, command: FunctionType, target: string, author: string, message: string):
+    async def command(self, auth, command: FunctionType, target: string, author: string, message: string):
         character = await auth.get_character(str(author))
         token = await auth.get_token(str(author))
         response = await self.game_controller.run(command, target, author, message, character, token)

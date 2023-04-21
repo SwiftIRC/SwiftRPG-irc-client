@@ -69,7 +69,13 @@ class IRC(irc.bot.SingleServerIRCBot):
                         )
                         return
 
-                    response = self.auth.login(event.source.nick, split[1])
+                    response = self.auth.login(
+                        self.game,
+                        self.privmsg,
+                        event.target,
+                        event.source.nick,
+                        split[1]
+                    )
 
                     if response and 'name' in response:
                         self.privmsg(

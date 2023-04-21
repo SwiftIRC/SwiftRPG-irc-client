@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 
+import asyncio
 import datetime
 import json
 import os
 import requests
 import string
+from types import FunctionType
+
+import API.api as api
+from game import *
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -60,30 +65,31 @@ class Auth:
         except json.decoder.JSONDecodeError as e:
             print(e)
 
-    def login(self, nick: string, token: string):
-        headers = {
-            'X-Bot-Token': os.getenv('API_TOKEN'),
-            'Authorization': 'Bearer {}'.format(token),
-        }
+    def login(self, game: Game, command: FunctionType, target: string, author: string, message: string):
+        # headers = {
+        #     'X-Bot-Token': os.getenv('API_TOKEN'),
+        #     'Authorization': 'Bearer {}'.format(token),
+        # }
 
-        response = requests.get("{}/api/auth/token/login".format(os.getenv('API_HOSTNAME')),
-                                verify=self.ssl_verify,
-                                headers=headers)
+        # response = requests.get("{}/api/auth/token/login".format(os.getenv('API_HOSTNAME')),
+        #                         verify=self.ssl_verify,
+        #                         headers=headers)
 
+        loop = asyncio.new_event_loop()
+        response = loop.run_until_complete(
+            api.get(game, command, target, message, 'auth/token/login'))
         json = {'error': True}
 
-        if response.status_code == 200:
-            try:
-                json = response.json()
-            except:
-                return json
-
+        if response:
+            print(response)
             future = datetime.datetime.utcnow() + datetime.timedelta(days=7)
 
-            self.auth[nick] = {'character': json.get('name', ''),
-                               'token': json.get('token', ''),
-                               'expiration': str(future)}
+            self.auth[author] = {'character': response['name'],
+                                 'token': response['token'],
+                                 'expiration': str(future)}
             self.write_cache()
+
+            return response
 
         return json
 
