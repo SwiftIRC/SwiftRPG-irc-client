@@ -119,7 +119,7 @@ class CustomRequestHandler(http.server.SimpleHTTPRequestHandler):
                         json_data['data']['user']['name'],
                         json_data['data']['command']['verb'],
                     )
-                elif json_data['type'] == 'event':
+                elif json_data['type'] == 'event_start':
                     xp_rewards = [
                         '{}: {}'.format(
                             xp['name'].title(),
