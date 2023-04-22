@@ -7,4 +7,4 @@ async def exec(game, command, target, author, message, character, token):
         return "Usage: {} <experience>".format(split[0])
 
     level = await game.level(int(split[1]))
-    return "XP of {} is equivalent to level {}".format(split[1], level)
+    return "XP of {:,} is equivalent to level {}".format(int(split[1]), level)
