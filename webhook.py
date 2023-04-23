@@ -123,8 +123,9 @@ class WebhookServer:
                         ):
                             correct_path = True
                 else:
+                    # Finding a blank line here means
+                    # we've reached the end of the headers.
                     found = True
-            print(headers)
 
     async def handle_payload(self, line):
         try:
