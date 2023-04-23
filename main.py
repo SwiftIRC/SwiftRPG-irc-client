@@ -20,24 +20,25 @@ print("Loading SwiftRPG...")
 load_dotenv()
 
 config = {
-    'NICK': os.getenv('NICK'),
-    'PASSWORD': os.getenv('PASSWORD'),
-    'IRC_SERVER': os.getenv('IRC_SERVER'),
-    'PORT': int(os.getenv('PORT')),
-    'CHANNELS': json.loads(os.getenv('CHANNELS')),
-    'API_HOSTNAME': os.getenv('API_HOSTNAME'),
-    'CERTIFICATE_PATH': os.getenv('CERTIFICATE_PATH'),
-    'PRIVATE_KEY_PATH': os.getenv('PRIVATE_KEY_PATH'),
-    'WEBHOOK_LISTEN': os.getenv('WEBHOOK_LISTEN'),
-    'WEBHOOK_PORT': int(os.getenv('WEBHOOK_PORT')),
-    'WEBHOOK_PATH': os.getenv('WEBHOOK_PATH'),
-    'WEBHOOK_ADDRESS': os.getenv('WEBHOOK_ADDRESS'),
-    'SSL_VERIFY': bool(int(os.getenv('SSL_VERIFY'))),
-    'API_TOKEN': os.getenv('API_TOKEN'),
-    'CLIENT_ID': os.getenv('CLIENT_ID'),
+    "NICK": os.getenv("NICK"),
+    "PASSWORD": os.getenv("PASSWORD"),
+    "IRC_SERVER": os.getenv("IRC_SERVER"),
+    "PORT": int(os.getenv("PORT")),
+    "CHANNELS": json.loads(os.getenv("CHANNELS")),
+    "API_HOSTNAME": os.getenv("API_HOSTNAME"),
+    "CERTIFICATE_PATH": os.getenv("CERTIFICATE_PATH"),
+    "PRIVATE_KEY_PATH": os.getenv("PRIVATE_KEY_PATH"),
+    "WEBHOOK_LISTEN": os.getenv("WEBHOOK_LISTEN"),
+    "WEBHOOK_PORT": int(os.getenv("WEBHOOK_PORT")),
+    "WEBHOOK_PATH": os.getenv("WEBHOOK_PATH"),
+    "WEBHOOK_ADDRESS": os.getenv("WEBHOOK_ADDRESS"),
+    "SSL_VERIFY": bool(int(os.getenv("SSL_VERIFY"))),
+    "API_TOKEN": os.getenv("API_TOKEN"),
+    "CLIENT_ID": os.getenv("CLIENT_ID"),
+    "DEBUG": bool(int(os.getenv("DEBUG"))),
 }
 
-if not config['SSL_VERIFY']:
+if not config["SSL_VERIFY"]:
     urllib3.disable_warnings()
 
 
@@ -58,7 +59,6 @@ def input_thread():
 
 
 def accept_input():
-
     print("Accepting input...")
     while True:
         cmd = input("$ ")

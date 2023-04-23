@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+import asyncio
 import irc.bot
 import os
-import asyncio
+import ssl
 
 
 class IRC(irc.bot.SingleServerIRCBot):
@@ -15,12 +16,16 @@ class IRC(irc.bot.SingleServerIRCBot):
     auth = None
 
     def __init__(self, config, game, auth):
+        ssl_factory = irc.connection.Factory(wrapper=ssl.wrap_socket)
+
         irc.client.ServerConnection.buffer_class.encoding = "latin-1"
-        irc.bot.SingleServerIRCBot.__init__(self, [
-            (config["IRC_SERVER"],
-             config["PORT"])],
+        irc.bot.SingleServerIRCBot.__init__(
+            self,
+            [(config["IRC_SERVER"], config["PORT"])],
             config["NICK"],
-            "SwiftRPG")
+            "SwiftRPG",
+            connect_factory=ssl_factory,
+        )
 
         self.config = config
         self.game = game
@@ -41,31 +46,37 @@ class IRC(irc.bot.SingleServerIRCBot):
     def on_welcome(self, connection, event):
         self.connection = connection
 
-        if len(self.config['PASSWORD']):
-            self.connection.privmsg("NickServ", "IDENTIFY {}".format(
-                self.config['PASSWORD']))
+        if len(self.config["PASSWORD"]):
+            self.connection.privmsg(
+                "NickServ", "IDENTIFY {}".format(self.config["PASSWORD"])
+            )
 
-        connection.join(
-            ','.join([channel for channel in self.config['CHANNELS']]))
+        connection.join(",".join([channel for channel in self.config["CHANNELS"]]))
 
     def on_pubmsg(self, connection, event):
-        if (event.target in self.config['CHANNELS']):
+        if event.target in self.config["CHANNELS"]:
             message = event.arguments[0].strip()
             split = message.split()
-            print("[IRC] [{}] ({}) {}".format(
-                event.target, event.source.nick, message))
-            if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
+            print("[IRC] [{}] ({}) {}".format(event.target, event.source.nick, message))
+            if (
+                message.startswith("+")
+                or message.startswith("-")
+                or message.startswith("!")
+                or message.startswith("@")
+                or message.startswith(".")
+            ):
                 if split[0][1:] == "help":
-                    self.privmsg(event.target,
-                                 "{}/help".format(self.config['API_HOSTNAME']))
+                    self.privmsg(
+                        event.target, "{}/help".format(self.config["API_HOSTNAME"])
+                    )
                     return
                 elif split[0][1:] == "login":
                     if len(split) != 2:
                         self.privmsg(
-                            event.target, "Syntax: {} <token from {}/user>".format(
-                                split[0],
-                                os.getenv('API_HOSTNAME')
-                            )
+                            event.target,
+                            "Syntax: {} <token from {}/user>".format(
+                                split[0], os.getenv("API_HOSTNAME")
+                            ),
                         )
                         return
 
@@ -74,69 +85,54 @@ class IRC(irc.bot.SingleServerIRCBot):
                         self.privmsg,
                         event.target,
                         event.source.nick,
-                        split[1]
+                        split[1],
                     )
 
-                    if response and 'name' in response:
+                    if response and "name" in response:
                         self.privmsg(
                             event.target,
                             "[{}] 🔑 Successfully logged in".format(
-                                response.get('name'),
-                            )
+                                response.get("name"),
+                            ),
                         )
                     else:
                         self.privmsg(
                             event.target,
-                            "[{}] 🔑 Error: invalid token".format(
-                                event.source.nick
-                            )
+                            "[{}] 🔑 Error: invalid token".format(event.source.nick),
                         )
                     return
                 elif split[0][1:] == "logout":
                     if self.auth.check(event.source.nick):
                         self.auth.logout(event.source.nick)
-                        self.privmsg(
-                            event.target,
-                            "Logout successful!"
-                        )
+                        self.privmsg(event.target, "Logout successful!")
                     else:
-                        self.privmsg(
-                            event.target,
-                            "You are not logged in."
-                        )
+                        self.privmsg(event.target, "You are not logged in.")
                     return
                 elif split[0][1:] == "loggedin":
                     if self.auth.check(event.source.nick):
-                        self.privmsg(
-                            event.target,
-                            "Logged in!"
-                        )
+                        self.privmsg(event.target, "Logged in!")
                     else:
-                        self.privmsg(
-                            event.target,
-                            "Not currently logged in."
-                        )
+                        self.privmsg(event.target, "Not currently logged in.")
                     return
                 elif not self.auth.check(event.source.nick):
-                    self.privmsg(
-                        event.target,
-                        "You are not logged in."
-                    )
+                    self.privmsg(event.target, "You are not logged in.")
                     return
-                print('[IRC] [{}] CMD DETECTED: ({}) {}'.format(
-                    event.target,
-                    event.source.nick,
-                    message
-                ))
+                print(
+                    "[IRC] [{}] CMD DETECTED: ({}) {}".format(
+                        event.target, event.source.nick, message
+                    )
+                )
                 loop = asyncio.new_event_loop()
                 try:
-                    loop.run_until_complete(self.game.command(
-                        self.auth,
-                        self.privmsg,
-                        event.target,
-                        event.source.nick,
-                        message
-                    ))
+                    loop.run_until_complete(
+                        self.game.command(
+                            self.auth,
+                            self.privmsg,
+                            event.target,
+                            event.source.nick,
+                            message,
+                        )
+                    )
                 finally:
                     loop.close()
 
@@ -144,71 +140,61 @@ class IRC(irc.bot.SingleServerIRCBot):
         message = event.arguments[0].strip()
         split = message.split()
 
-        print("[IRC] [{}] ({}) {}".format(
-            event.target, event.source.nick, message))
+        print("[IRC] [{}] ({}) {}".format(event.target, event.source.nick, message))
 
-        if message.startswith('+') or message.startswith('-') or message.startswith('!') or message.startswith('@') or message.startswith('.'):
+        if (
+            message.startswith("+")
+            or message.startswith("-")
+            or message.startswith("!")
+            or message.startswith("@")
+            or message.startswith(".")
+        ):
             if split[0][1:] == "login":
                 if len(split) != 2:
                     self.privmsg(
-                        event.source.nick, "Syntax: {} <token from {}/user>".format(
-                            split[0],
-                            os.getenv('API_HOSTNAME')
-                        )
+                        event.source.nick,
+                        "Syntax: {} <token from {}/user>".format(
+                            split[0], os.getenv("API_HOSTNAME")
+                        ),
                     )
                     return
 
                 response = self.auth.login(event.source.nick, split[1])
 
-                if response and 'name' in response:
+                if response and "name" in response:
                     self.privmsg(
                         event.source.nick,
                         "[{}] 🔑 Successfully logged in".format(
-                            response.get('name'),
-                        )
+                            response.get("name"),
+                        ),
                     )
                 else:
                     self.privmsg(
                         event.source.nick,
-                        "[{}] 🔑 Error: invalid token".format(
-                            event.source.nick
-                        )
+                        "[{}] 🔑 Error: invalid token".format(event.source.nick),
                     )
                 return
             elif split[0][1:] == "register":
                 self.privmsg(
-                    event.source.nick, "Syntax: {} <token from {}/user>".format(
-                        split[0],
-                        os.getenv('API_HOSTNAME')
-                    )
+                    event.source.nick,
+                    "Syntax: {} <token from {}/user>".format(
+                        split[0], os.getenv("API_HOSTNAME")
+                    ),
                 )
             elif split[0][1:] == "logout":
                 if self.auth.check(event.source.nick):
                     self.auth.logout(event.source.nick)
-                    self.privmsg(
-                        event.source.nick,
-                        "Logout successful!"
-                    )
+                    self.privmsg(event.source.nick, "Logout successful!")
                 else:
-                    self.privmsg(
-                        event.source.nick,
-                        "You are not logged in."
-                    )
+                    self.privmsg(event.source.nick, "You are not logged in.")
             elif split[0][1:] == "loggedin":
                 if self.auth.check(event.source.nick):
-                    self.privmsg(
-                        event.source.nick,
-                        "Logged in!"
-                    )
+                    self.privmsg(event.source.nick, "Logged in!")
                 else:
-                    self.privmsg(
-                        event.source.nick,
-                        "Not currently logged in."
-                    )
+                    self.privmsg(event.source.nick, "Not currently logged in.")
             elif split[0][1:] == "help":
                 self.privmsg(
-                    event.source.nick,
-                    "{}/help".format(self.config['API_HOSTNAME'])
+                    event.source.nick, "{}/help".format(self.config["API_HOSTNAME"])
                 )
 
     def on_nick(self, nick, event):
@@ -224,7 +210,9 @@ class IRC(irc.bot.SingleServerIRCBot):
 
     def on_kick(self, kick, event):
         print(event.arguments[0])
-        if event.target in self.config['CHANNELS'] and self.auth.check(event.arguments[0]):
+        if event.target in self.config["CHANNELS"] and self.auth.check(
+            event.arguments[0]
+        ):
             self.auth.logout(event.arguments[0])
 
     def run(self):

@@ -1,4 +1,5 @@
+cryptography == 40.0.2
 irc == 19.0.1
+python-box == 7.0.1
 python-dotenv == 0.20.0
 requests == 2.22.0
-python-box == 7.0.1
