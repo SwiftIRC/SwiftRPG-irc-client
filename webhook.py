@@ -37,9 +37,12 @@ class WebhookServer:
 
         # Create the HTTP server with SSL enabled
         if socket.has_dualstack_ipv6():
-            server = socket.create_server(
-                addr, family=socket.AF_INET6, dualstack_ipv6=True
-            )
+            try:
+                server = socket.create_server(
+                    addr, family=socket.AF_INET6, dualstack_ipv6=True
+                )
+            except:
+                server = socket.create_server(addr)
         else:
             server = socket.create_server(addr)
 
@@ -66,7 +69,10 @@ class WebhookServer:
         while True:
             conn, addr = sock.accept()
             print(f"Received connection from {addr}")
-            asyncio.run(self.handle_connection(conn, addr))
+            try:
+                asyncio.run(self.handle_connection(conn, addr))
+            except Exception as e:
+                print("Error handling connection:", e)
 
     # Posts to the server to register/update the client
     async def register(self):
@@ -138,15 +144,15 @@ class WebhookServer:
             elif data["type"] == "event_start":
                 xp_rewards = [
                     "{}: {}".format(
-                        xp["name"].title(),
-                        xp["quantity"],
+                        xp["details"]["name"].title(),
+                        xp["gained"],
                     )
                     for xp in data["data"]["reward"]["experience"]
                 ]
                 item_rewards = [
                     "{}: {:,}".format(
-                        loot["name"],
-                        loot["quantity"],
+                        loot["details"]["name"],
+                        loot["gained"],
                     )
                     for loot in data["data"]["reward"]["loot"]
                 ]

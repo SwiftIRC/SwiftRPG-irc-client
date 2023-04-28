@@ -1,10 +1,13 @@
-import commands.woodcutting.ChopCommand as command_chop
+#!/usr/bin/env python3
+
+import commands.events.EngageCommand as command_engage
 import commands.firemaking.BurnCommand as command_burn
-import commands.thieving.PickpocketCommand as command_pickpocket
-import commands.stats.StatsCommand as command_stats
-import commands.quest.QuestCommand as command_quest
 import commands.map.ExploreCommand as command_explore
 import commands.map.LookCommand as command_look
+import commands.quest.QuestCommand as command_quest
+import commands.stats.StatsCommand as command_stats
+import commands.thieving.PickpocketCommand as command_pickpocket
+import commands.woodcutting.ChopCommand as command_chop
 
 import commands.stats.XpCommand as command_xp
 import commands.stats.LvlCommand as command_lvl
@@ -25,6 +28,7 @@ class CommandController:
         self.commands = {
             "burn": command_burn.exec,
             "chop": command_chop.exec,
+            "engage": command_engage.exec,
             "explore": command_explore.exec,
             "look": command_look.exec,
             "lvl": command_lvl.exec,
@@ -41,8 +45,16 @@ class CommandController:
 
         try:
             if command_string in self.commands:
-                await self.game.process_response(command, target, await self.commands[command_string](self.game, command, target, author, message, character, token))
+                await self.game.process_response(
+                    command,
+                    target,
+                    await self.commands[command_string](
+                        self.game, command, target, author, message, character, token
+                    ),
+                )
             else:
-                await self.game.process_response(command, target, "Error: command not found")
+                await self.game.process_response(
+                    command, target, "Error: command not found"
+                )
         except Exception as e:
             await self.game.process_response(command, target, "Error: {}".format(e))

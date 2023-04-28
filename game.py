@@ -68,21 +68,21 @@ class Game:
         elif "reward" in response and response["reward"] != None:
             xp_rewards = [
                 "{}: {} ({}xp) [+{}xp]".format(
-                    reward.get("skill").get("name").title(),
+                    reward.get("details").get("name").title(),
                     await self.level(reward.get("total", 0)),
                     reward.get("total", 0),
-                    reward.get("quantity", 0),
+                    reward.get("gained", 0),
                 )
-                for reward in response.get("reward", {}).get("experience")
+                for reward in response.get("reward", {}).get("experience", [])
             ]
             item_rewards = [
                 "{}: {} [{}{}]".format(
-                    loot.get("item").get("name"),
+                    loot.get("details").get("name"),
                     loot.get("total", 0),
-                    "+" if loot.get("quantity", 0) > 0 else "",
-                    loot.get("quantity", 0),
+                    "+" if loot.get("gained", 0) > 0 else "",
+                    loot.get("gained", 0),
                 )
-                for loot in response.get("reward", {}).get("loot")
+                for loot in response.get("reward", {}).get("loot", [])
             ]
             rewards = " | ".join(xp_rewards + item_rewards)
             return "[{}] {} {} | {} {} seconds more of {}.".format(
