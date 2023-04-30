@@ -136,6 +136,7 @@ class WebhookServer:
     async def handle_payload(self, line):
         try:
             data = json.loads(line)
+            message = data["type"]
             if data["type"] == "command_complete":
                 message = "{} has finished {}!".format(
                     data["data"]["user"]["name"],
@@ -161,68 +162,13 @@ class WebhookServer:
                     ", ".join(item_rewards),
                     ", ".join(xp_rewards),
                 )
+            elif data["type"] == "event_ending":
+                message = "The `{}` event is ending in {} seconds!".format(
+                    data["data"]["event"]["name"],
+                    data["data"]["seconds_remaining"],
+                )
 
             for channel in self.config["CHANNELS"]:
                 self.irc.privmsg(channel, message)
         except Exception as e:
             print("Error handling payload:", e)
-
-
-# class CustomRequestHandler(http.server.SimpleHTTPRequestHandler):
-#     def __init__(self, *args, ircd, configuration, **kwargs):
-#         self.irc = ircd
-#         self.config = configuration
-
-#         super().__init__(*args, **kwargs)
-
-#     def do_GET(self):
-#         print("Received a GET request from", self.client_address)
-#         if self.path == "/status":
-#             self.send_response(200)
-#             self.send_header("Content-Type", "application/json; charset=utf-8")
-#             self.end_headers()
-#             self.wfile.write(b'{"status": "ok"}')
-
-#     def do_POST(self):
-#         print("Received a POST request from", self.client_address)
-#         if self.path == self.config["WEBHOOK_PATH"]:
-#             data = self.rfile.read(int(self.headers["Content-Length"]))
-#             token = self.headers["X-Bot-Token"]
-#             print("received: ", data.decode())
-
-#             if token == os.getenv("API_TOKEN"):
-#                 self.send_response(200)
-#                 self.send_header("Content-Type", "application/json; charset=utf-8")
-#                 self.end_headers()
-
-#                 message = ""
-#                 json_data = json.loads(data.decode())
-
-#                 if json_data["type"] == "command_complete":
-#                     message = "{} has finished {}!".format(
-#                         json_data["data"]["user"]["name"],
-#                         json_data["data"]["command"]["verb"],
-#                     )
-#                 elif json_data["type"] == "event_start":
-#                     xp_rewards = [
-#                         "{}: {}".format(
-#                             xp["name"].title(),
-#                             xp["quantity"],
-#                         )
-#                         for xp in json_data["data"]["reward"]["experience"]
-#                     ]
-#                     item_rewards = [
-#                         "{}: {:,}".format(
-#                             loot["name"],
-#                             loot["quantity"],
-#                         )
-#                         for loot in json_data["data"]["reward"]["loot"]
-#                     ]
-#                     message = "{} | Rewards: [ (loot) {} | (xp) {} ]".format(
-#                         json_data["data"]["event"]["description"],
-#                         ", ".join(item_rewards),
-#                         ", ".join(xp_rewards),
-#                     )
-
-#                 for channel in self.config["CHANNELS"]:
-#                     self.irc.privmsg(channel, message)
