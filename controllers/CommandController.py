@@ -3,6 +3,7 @@
 import commands.events.EngageCommand as command_engage
 import commands.firemaking.BurnCommand as command_burn
 import commands.map.ExploreCommand as command_explore
+import commands.fishing.FishCommand as command_fish
 import commands.map.LookCommand as command_look
 import commands.quest.QuestCommand as command_quest
 import commands.stats.StatsCommand as command_stats
@@ -30,6 +31,7 @@ class CommandController:
             "chop": command_chop.exec,
             "engage": command_engage.exec,
             "explore": command_explore.exec,
+            "fish": command_fish.exec,
             "look": command_look.exec,
             "lvl": command_lvl.exec,
             "pickpocket": command_pickpocket.exec,
