@@ -104,7 +104,7 @@ class WebhookServer:
             if not data:
                 return
             payload = data.decode("latin-1")
-            print(f"Received data from {addr}: {payload}")
+            print(f"Received data from {addr}")
             found = False
             authorized = False
             correct_path = False
