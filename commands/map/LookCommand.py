@@ -25,16 +25,19 @@ async def exec(
                 return "[{}] 👀 Error: {}".format(character, raw_response["failure"])
             response = raw_response.get("metadata", {})
             edges = []
+            water = False
             for edge in response["edges"]:
                 if edge["pivot"]["is_road"]:
                     edges.append(edge["pivot"]["direction"])
+                if edge["name"] == "Water":
+                    water = True
             edge_str = ", ".join(edges)
             if len(edges) > 1:
                 edge_split = edge_str.split()
                 edge_split.insert(-1, "and")
                 edge_str = " ".join(edge_split)
 
-            return "[{}] 👀 Looking around [{}, {}]. {} Buildings: {} | People: {} | Trees: {} | Roads: {} | {}".format(
+            return "[{}] 👀 Looking around [{}, {}]. {} Buildings: {} | People: {} | Trees: {} | Roads: {} | {} available | {}".format(
                 character,
                 response["x"],
                 response["y"],
@@ -43,6 +46,7 @@ async def exec(
                 len(response["npcs"]),
                 response["available_trees"],
                 edge_str,
+                "Water" if water else "No water",
                 "Undiscovered."
                 if response["discovered_at"] == None
                 else "Discovered by {} ({}).".format(
