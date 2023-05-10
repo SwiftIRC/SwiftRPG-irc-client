@@ -95,11 +95,11 @@ class IRC(irc.bot.SingleServerIRCBot):
                                 response.get("name"),
                             ),
                         )
-                    else:
-                        self.privmsg(
-                            event.target,
-                            "[{}] 🔑 Error: invalid token".format(event.source.nick),
-                        )
+                    # else:
+                    #     self.privmsg(
+                    #         event.target,
+                    #         "[{}] 🔑 Error: invalid token".format(event.source.nick),
+                    #     )
                     return
                 elif split[0][1:] == "logout":
                     if self.auth.check(event.source.nick):
