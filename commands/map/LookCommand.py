@@ -27,8 +27,8 @@ async def exec(
             edges = []
             water = False
             for edge in response["edges"]:
-                if edge["pivot"]["is_road"]:
-                    edges.append(edge["pivot"]["direction"])
+                if edge["is_road"]:
+                    edges.append(edge["direction"])
                 if edge["name"] == "Water":
                     water = True
             edge_str = ", ".join(edges)
@@ -61,9 +61,8 @@ async def exec(
 
             if returned:
                 response = returned.get("metadata", {})
-                print(response)
 
-                if len(response):
+                if response and len(response):
                     npcs = []
                     for i in range(0, len(response)):
                         npcs.append(
@@ -97,8 +96,8 @@ async def exec(
                             stats = [
                                 "{} {} ({:,}xp)".format(
                                     skill["name"].title(),
-                                    await game.level(skill["pivot"]["quantity"]),
-                                    skill["pivot"]["quantity"],
+                                    await game.level(skill["quantity"]),
+                                    skill["quantity"],
                                 )
                                 for skill in npc["skills"]
                             ]
