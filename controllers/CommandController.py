@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import commands.cooking.CookCommand as command_cook
 import commands.events.EngageCommand as command_engage
 import commands.firemaking.BurnCommand as command_burn
 import commands.map.ExploreCommand as command_explore
@@ -29,6 +30,7 @@ class CommandController:
         self.commands = {
             "burn": command_burn.exec,
             "chop": command_chop.exec,
+            "cook": command_cook.exec,
             "engage": command_engage.exec,
             "explore": command_explore.exec,
             "fish": command_fish.exec,
